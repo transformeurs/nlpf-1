@@ -4,16 +4,21 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
-from .database import SessionLocal, engine
+from .database import engine
 
 from .dependencies import get_db
-from .candidate.router import router
+from .candidate.router import router as CandidateRouter
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.include_router(router)
+### Import the routers from the other modules
+
+app.include_router(CandidateRouter)
+
+### Example API, to be removed
+### ----------------------------------------------------------------------------
 
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):

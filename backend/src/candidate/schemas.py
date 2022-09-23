@@ -16,6 +16,6 @@ class Candidate(BaseModel):
     photo_url: Union[str, None] = None
     description: Union[str, None] = None
     pronouns: Union[str, None] = None
-    
+
     class Config:
         orm_mode = True
