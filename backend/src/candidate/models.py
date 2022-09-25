@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from src.database import Base
 
 class Candidate(Base):
-    __tablename__ = "canditate"
+    __tablename__ = "candidate"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)

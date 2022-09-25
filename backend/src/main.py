@@ -3,13 +3,14 @@ from typing import List
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import engine
-
+from . import crud, schemas # to be removed
+from .database import engine, Base
 from .dependencies import get_db
+
+# Routers
 from .candidate.router import router as CandidateRouter
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -17,7 +18,7 @@ app = FastAPI()
 
 app.include_router(CandidateRouter)
 
-### Example API, to be removed
+### Example API, TO BE REMOVED
 ### ----------------------------------------------------------------------------
 
 @app.post("/users/", response_model=schemas.User)
