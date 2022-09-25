@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
 from . import models, schemas
-import bcrypt
 
 
 def get_candidate(db: Session, candidate_id: int):
@@ -17,11 +16,10 @@ def get_candidates(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_candidate(db: Session, candidate: schemas.CandidateCreate):
-    hashed_password = bcrypt.hashpw(candidate.password.encode(), bcrypt.gensalt())
     db_candidate = models.Candidate(
         name=candidate.name,
         email=candidate.email,
-        hashed_password=hashed_password,
+        hashed_password=candidate.password,
         photo_url=candidate.photo_url,
         description=candidate.description,
         pronouns=candidate.pronouns
