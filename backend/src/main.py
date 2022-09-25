@@ -10,6 +10,10 @@ from .dependencies import get_db
 # Routers
 from .candidate.router import router as CandidateRouter
 
+from dotenv import load_dotenv
+
+load_dotenv(".env.local")
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
