@@ -19,10 +19,3 @@ class Candidate(BaseModel):
 
     class Config:
         orm_mode = True
-
-class CandidateLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-class CandidateToken(BaseModel):
-    access_token: str

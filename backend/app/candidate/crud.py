@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from ..account.models import Account
 
 
 def get_candidate(db: Session, candidate_id: int):
@@ -16,15 +17,18 @@ def get_candidates(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_candidate(db: Session, candidate: schemas.CandidateCreate):
+    db_account = Account(email=candidate.email, hashed_password=candidate.password)
+    db.add(db_account)
+
     db_candidate = models.Candidate(
-        name=candidate.name,
         email=candidate.email,
-        hashed_password=candidate.password,
+        name=candidate.name,
         photo_url=candidate.photo_url,
         description=candidate.description,
         pronouns=candidate.pronouns
     )
     db.add(db_candidate)
+
     db.commit()
     db.refresh(db_candidate)
     return db_candidate
