@@ -13,7 +13,7 @@ from ..account.models import Account
 
 router = APIRouter()
 
-@router.get("/companies/", response_model=List[schemas.Company])
+@router.get("/companies", response_model=List[schemas.Company])
 async def read_companies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     companies = crud.get_companies(db, skip=skip, limit=limit)
     return companies
@@ -27,7 +27,7 @@ async def read_companies(company_id: int, db: Session = Depends(get_db)):
 
 # Company Subscription -------------------------------------------------------
 
-@router.post("/companies/", response_model=schemas.Company)
+@router.post("/companies", response_model=schemas.Company)
 async def create_company(company: schemas.CompanyCreate, db: Session = Depends(get_db)):
     db_company = crud.get_company_by_email(db, email=company.email)
     if db_company:
@@ -38,7 +38,7 @@ async def create_company(company: schemas.CompanyCreate, db: Session = Depends(g
     return crud.create_company(db=db, company=company)
 
 
-@router.post("/companies/uploadImage/")
+@router.post("/companies/uploadImage")
 async def create_upload_file(file: UploadFile):
     s3_resource = get_s3_resource()
     bucket = s3_resource.Bucket('company-images')
@@ -61,6 +61,6 @@ async def get_current_company(account: Account = Depends(get_current_account), d
     return db_company
 
 # Route that return the current connected company with its token
-@router.get("/companies/me/", response_model=schemas.Company)
+@router.get("/companies/me", response_model=schemas.Company)
 async def get_me(company: schemas.Company = Depends(get_current_company)):
     return company
