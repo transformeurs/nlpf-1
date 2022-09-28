@@ -4,20 +4,20 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-packages = [{include = "jobboard_backend"}]
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 fastapi = "^0.85.0"
-uvicorn = {extras = ["standard"], version = "^0.18.3"}
+uvicorn = { extras = ["standard"], version = "^0.18.3" }
 SQLAlchemy = "^1.4.41"
 psycopg2-binary = "^2.9.3"
 boto3 = "^1.24.80"
 python-multipart = "^0.0.5"
 python-dotenv = "^0.21.0"
-pydantic = {extras = ["email"], version = "^1.10.2"}
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+pydantic = { extras = ["email"], version = "^1.10.2" }
+python-jose = { extras = ["cryptography"], version = "^3.3.0" }
+passlib = { extras = ["bcrypt"], version = "^1.7.4" }
 
 
 [build-system]
