@@ -10,7 +10,7 @@ from ..utils import jwt, password
 router = APIRouter()
 
 # Returns a JWT token if login is successful
-@router.post("/account/login/", response_model=schemas.AccountToken)
+@router.post("/account/login", response_model=schemas.AccountToken)
 async def login_account(account: schemas.AccountLogin, db: Session = Depends(get_db)):
     db_account = crud.get_account_by_email(db, email=account.email)
 

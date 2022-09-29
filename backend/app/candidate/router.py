@@ -13,7 +13,7 @@ from ..account.models import Account
 
 router = APIRouter()
 
-@router.get("/candidates/", response_model=List[schemas.Candidate])
+@router.get("/candidates", response_model=List[schemas.Candidate])
 async def read_candidates(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     candidates = crud.get_candidates(db, skip=skip, limit=limit)
     return candidates
@@ -27,7 +27,7 @@ async def read_candidates(candidate_id: int, db: Session = Depends(get_db)):
 
 # Candidate Subscription -------------------------------------------------------
 
-@router.post("/candidates/", response_model=schemas.Candidate)
+@router.post("/candidates", response_model=schemas.Candidate)
 async def create_candidate(candidate: schemas.CandidateCreate, db: Session = Depends(get_db)):
     db_candidate = crud.get_candidate_by_email(db, email=candidate.email)
     if db_candidate:
@@ -38,7 +38,7 @@ async def create_candidate(candidate: schemas.CandidateCreate, db: Session = Dep
     return crud.create_candidate(db=db, candidate=candidate)
 
 
-@router.post("/candidates/uploadImage/")
+@router.post("/candidates/uploadImage")
 async def create_upload_file(file: UploadFile):
     s3_resource = get_s3_resource()
     bucket = s3_resource.Bucket('candidate-images')
@@ -61,6 +61,6 @@ async def get_current_candidate(account: Account = Depends(get_current_account),
     return db_candidate
 
 # Route that return the current connected candidate with its token
-@router.get("/candidates/me/", response_model=schemas.Candidate)
+@router.get("/candidates/me", response_model=schemas.Candidate)
 async def get_me(candidate: schemas.Candidate = Depends(get_current_candidate)):
     return candidate
