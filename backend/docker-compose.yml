@@ -4,15 +4,30 @@ services:
 
   db:
     image: postgres:14
-    container_name: database
+    container_name: nlpf-database
     environment:
       POSTGRES_USER: jobboard
       POSTGRES_PASSWORD: jobboard
       POSTGRES_DB: jobboard
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - nlpf_postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
+  s3:
+    image: quay.io/minio/minio:latest
+    container_name: nlpf-s3
+    environment:
+      - MINIO_ROOT_USER=jobboard
+      - MINIO_ROOT_PASSWORD=jobboard
+    volumes:
+      - nlpf_s3_data:/data
+    ports:
+      - 9000:9000
+      - 9090:9090
+    command: server /data --console-address ":9090"
+
 volumes:
-  postgres_data:
+  nlpf_postgres_data:
+  nlpf_s3_data:
