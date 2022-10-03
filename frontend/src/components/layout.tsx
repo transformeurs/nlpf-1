@@ -31,7 +31,7 @@ const navigation = [
 const userNavigation = [
     {
         name: "Sign out",
-        fun: () => {}
+        fun: () => { }
     }
 ];
 

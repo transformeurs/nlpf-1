@@ -61,6 +61,6 @@ async def get_current_company(account: Account = Depends(get_current_account), d
     return db_company
 
 # Route that return the current connected company with its token
-@router.get("/companies/me", response_model=schemas.Company)
+@router.get("/companies/me/", response_model=schemas.Company)
 async def get_me(company: schemas.Company = Depends(get_current_company)):
     return company

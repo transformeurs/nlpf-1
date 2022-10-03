@@ -61,6 +61,6 @@ async def get_current_candidate(account: Account = Depends(get_current_account),
     return db_candidate
 
 # Route that return the current connected candidate with its token
-@router.get("/candidates/me", response_model=schemas.Candidate)
+@router.get("/candidates/me/", response_model=schemas.Candidate)
 async def get_me(candidate: schemas.Candidate = Depends(get_current_candidate)):
     return candidate
