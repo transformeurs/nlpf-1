@@ -55,3 +55,27 @@ export function fetchApi(
 			});
 	});
 }
+
+export function uploadFormImage(
+	resource: string,
+	formData: FormData
+): Promise<FetchResponse | null> {
+	const controller = new AbortController();
+	const id = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+	return new Promise((resolve, reject) => {
+		fetchFun(resource, {
+			method: FetchMethod.POST,
+			body: formData,
+			signal: controller.signal
+		})
+			.then((res) => {
+				clearTimeout(id);
+				resolve(res);
+			})
+			.catch(() => {
+				clearTimeout(id);
+				resolve(null);
+			});
+	});
+}

@@ -39,6 +39,8 @@ const LoginForm: FC = () => {
             (event.target as HTMLFormElement).reset(); // Clear the form
         } else if (response.statusCode === 200) {
             setToken(response.data.access_token);
+        } else {
+            addNotification(NotificationStatus.Error, "Une erreur inconnue est survenue.");
         }
     };
 

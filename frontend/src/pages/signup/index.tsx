@@ -1,15 +1,25 @@
 import { UserIcon, KeyIcon, DocumentTextIcon, EnvelopeIcon, BuildingOfficeIcon } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import { FC, useState } from "react";
-import Button, { ButtonType, ButtonSize } from "../components/button";
-import Input, { InputType } from "../components/input";
-import Layout from "../components/layout";
-import { useNotification, NotificationStatus } from "../context/NotificationContext";
-import { fetchApi, FetchMethod } from "../utils/fetch";
+import Button, { ButtonType, ButtonSize } from "../../components/button";
+import Input, { InputType } from "../../components/input";
+import Layout from "../../components/layout";
+import { useNotification, NotificationStatus } from "../../context/NotificationContext";
+import { fetchApi, uploadFormImage, FetchMethod } from "../../utils/fetch";
 
+interface SignUpPayload {
+    name: string;
+    email: string;
+    password: string;
+    description?: string;
+    pronouns?: string;
+    photo_url?: string;
+}
 
 const SignUpForm: FC = () => {
+    const router = useRouter();
     const { addNotification } = useNotification();
     const [buttonLoading, setButtonLoading] = useState(false);
 
@@ -38,25 +48,47 @@ const SignUpForm: FC = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         // Prevents the default behavior of the form (submitting and refreshing the page)
         event.preventDefault();
+        const data: SignUpPayload = {
+            name: event.currentTarget.username.value,
+            email: event.currentTarget.email.value,
+            password: event.currentTarget.password.value,
+            description: event.currentTarget.description.value,
+            pronouns: userRole === "candidates" ? event.currentTarget.pronouns.value : null,
+        }
+
+        // First we submit the photo to the API through a FormData object
+        const formData = new FormData();
+        formData.append("file", hiddenFileInput.current!.files![0] as File);
+        setButtonLoading(true);
+        const uploadResponse = await uploadFormImage(`/${userRole}/uploadImage`, formData);
+        setButtonLoading(false);
+
+        if (!uploadResponse) {
+            addNotification(NotificationStatus.Error, "Une erreur est survenue lors de l'envoi de votre photo.");
+            return;
+        } else if (uploadResponse.statusCode === 200) {
+            data.photo_url = uploadResponse.data.filename;
+        } else {
+            addNotification(NotificationStatus.Error, "Une erreur est survenue lors de l'envoi de votre photo.");
+            return;
+        }
 
         setButtonLoading(true);
-        // const response = await fetchApi("/account/login", FetchMethod.POST, {
-        //     email: event.currentTarget.email.value,
-        //     password: event.currentTarget.password.value
-        // });
-        // setButtonLoading(false);
+        const response = await fetchApi(`/${userRole}/`, FetchMethod.POST, data);
+        setButtonLoading(false);
 
-        // if (!response) {
-        //     addNotification(
-        //         NotificationStatus.Error,
-        //         "Le serveur ne répond pas, veuillez vérifier votre connexion internet."
-        //     );
-        // } else if (response.statusCode === 401) {
-        //     addNotification(NotificationStatus.Error, "Courriel ou mot de passe incorrect.");
-        //     (event.target as HTMLFormElement).reset(); // Clear the form
-        // } else if (response.statusCode === 200) {
-        //     setToken(response.data.access_token);
-        // }
+        if (!response) {
+            addNotification(
+                NotificationStatus.Error,
+                "Le serveur ne répond pas, veuillez vérifier votre connexion internet."
+            );
+        } else if (response.statusCode === 400) {
+            addNotification(NotificationStatus.Error, "Addresse courriel déjà prise.");
+        } else if (response.statusCode === 200) {
+            router.push("/signup/success");
+        } else {
+            addNotification(NotificationStatus.Error, "Une erreur inconnue est survenue.");
+        }
     };
 
     return (
@@ -68,26 +100,25 @@ const SignUpForm: FC = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <div>Qui êtes-vous ?</div>
-                                <input type="radio" value="candidates" id="candidateRole" onChange={handleUserRoleChange} checked={userRole == "candidates"} />
+                                <input type="radio" value="candidates" id="candidateRole" onChange={handleUserRoleChange} checked={userRole === "candidates"} />
                                 <label htmlFor="candidateRole" className="ml-2">Candidat</label>
-                                <input type="radio" value="companies" id="companyRole" onChange={handleUserRoleChange} checked={userRole == "companies"} />
+                                <input type="radio" value="companies" id="companyRole" onChange={handleUserRoleChange} checked={userRole === "companies"} />
                                 <label htmlFor="companyRole" className="ml-2">Entreprise</label>
                             </div>
 
                             <div>
-                                <label htmlFor="name" className="sr-only">
+                                <label htmlFor="username" className="sr-only">
                                     Name
                                 </label>
                                 <Input
                                     type={InputType.TEXT}
-                                    name={"name"}
-                                    id={"name"}
+                                    name={"username"}
+                                    id={"username"}
                                     autoComplete={true}
-                                    placeholder={userRole == "candidates" ? "Votre nom" : "Nom de l'entreprise"}
-                                    leftIcon={userRole == "candidates" ? UserIcon : BuildingOfficeIcon}
+                                    placeholder={userRole === "candidates" ? "Votre nom" : "Nom de l'entreprise"}
+                                    leftIcon={userRole === "candidates" ? UserIcon : BuildingOfficeIcon}
                                 />
-                                {/* autoComplete="email"
-                                required */}
+                                {/* required */}
                             </div>
 
                             <div>
@@ -143,7 +174,7 @@ const SignUpForm: FC = () => {
 
                                 <div>
                                     <textarea name="description" id="description" placeholder={
-                                        userRole == "candidates" ? "Parlez-nous de vous..." : "Décrivez votre entreprise..."
+                                        userRole === "candidates" ? "Parlez-nous de vous..." : "Décrivez votre entreprise..."
                                     }></textarea>
                                 </div>
                             </div>

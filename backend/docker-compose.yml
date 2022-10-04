@@ -28,6 +28,20 @@ services:
       - 9090:9090
     command: server /data --console-address ":9090"
 
+  s3_init:
+    image: quay.io/minio/mc:latest
+    container_name: nlpf-s3-init-buckets
+    entrypoint: [ "" ]
+    command:
+      - sh
+      - -c
+      - |
+        mc alias set myminio http://s3:9000 jobboard jobboard
+        mc mb myminio/candidate-images --ignore-existing
+        mc anonymous set download myminio/candidate-images
+        mc mb myminio/company-images --ignore-existing
+        mc anonymous set download myminio/company-images
+
 volumes:
   nlpf_postgres_data:
   nlpf_s3_data:
