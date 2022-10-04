@@ -5,19 +5,19 @@ import { useRouter } from "next/router";
 import { NotificationStatus, useNotification } from "./NotificationContext";
 
 type User = {
-    id: number;
     name: string;
     email: string;
+    role: string;
     avatarUrl: string;
 };
 
 const AuthContext = React.createContext<
     | {
-          user: User | null;
-          setToken: (token: string) => void;
-          hasPermission: (permission: AuthorizationRole) => boolean;
-          disconnect: () => void;
-      }
+        user: User | null;
+        setToken: (token: string) => void;
+        hasPermission: (permission: AuthorizationRole) => boolean;
+        disconnect: () => void;
+    }
     | undefined
 >(undefined);
 
@@ -48,12 +48,12 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
                 setToken,
                 hasPermission: (role: AuthorizationRole) => {
                     switch (role) {
-                        case AuthorizationRole.SuperAdmin:
-                            return ["superadmin"].includes(user?.role ?? "");
-                        case AuthorizationRole.Admin:
-                            return ["superadmin", "admin"].includes(user?.role ?? "");
-                        case AuthorizationRole.User:
-                            return ["superadmin", "admin", "user"].includes(user?.role ?? "");
+                        case AuthorizationRole.AnyUser:
+                            return ["company", "candidate"].includes(user?.role ?? "");
+                        case AuthorizationRole.Company:
+                            return ["company"].includes(user?.role ?? "");
+                        case AuthorizationRole.Candidate:
+                            return ["candidate"].includes(user?.role ?? "");
                         case AuthorizationRole.Visitor:
                             return user === null;
                         case AuthorizationRole.All:
@@ -73,9 +73,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 };
 
 export enum AuthorizationRole {
-    SuperAdmin,
-    Admin,
-    User,
+    Candidate,
+    Company,
+    AnyUser,
     Visitor,
     All
 }

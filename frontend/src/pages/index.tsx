@@ -1,7 +1,115 @@
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
+import { FC, useState } from "react";
+import Button, { ButtonType, ButtonSize } from "../components/button";
+import Input, { InputType } from "../components/input";
 import Layout from "../components/layout";
-import LoginForm from "../components/loginForm";
+import { AuthorizationRole, useAuth } from "../context/AuthContext";
+import { NotificationStatus, useNotification } from "../context/NotificationContext";
+import { fetchApi, FetchMethod } from "../utils/fetch";
+
+const LoginForm: FC = () => {
+    const { setToken } = useAuth({
+        requiredRole: AuthorizationRole.Visitor,
+        redirectUrl: "/afterLogin",
+    });
+    const { addNotification } = useNotification();
+    const [buttonLoading, setButtonLoading] = useState(false);
+
+    // Handles the submit event on form submit
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        // Prevents the default behavior of the form (submitting and refreshing the page)
+        event.preventDefault();
+
+        setButtonLoading(true);
+        const response = await fetchApi("/account/login", FetchMethod.POST, {
+            email: event.currentTarget.email.value,
+            password: event.currentTarget.password.value
+        });
+        setButtonLoading(false);
+
+        if (!response) {
+            addNotification(
+                NotificationStatus.Error,
+                "Le serveur ne répond pas, veuillez vérifier votre connexion internet."
+            );
+        } else if (response.statusCode === 401) {
+            addNotification(NotificationStatus.Error, "Courriel ou mot de passe incorrect.");
+            (event.target as HTMLFormElement).reset(); // Clear the form
+        } else if (response.statusCode === 200) {
+            setToken(response.data.access_token);
+        }
+    };
+
+    return (
+        <div className="rounded-lg bg-white shadow">
+            <div className="px-4 py-8 sm:px-10">
+                <div className="text-center text-lg font-semibold">Se connecter</div>
+                <div className="mt-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label htmlFor="email" className="sr-only">
+                                E-mail
+                            </label>
+                            <Input
+                                type={InputType.EMAIL}
+                                name={"email"}
+                                id={"email"}
+                                autoComplete={true}
+                                placeholder={"Adresse de courriel"}
+                                leftIcon={UserIcon}
+                            />
+                            {/* autoComplete="email"
+                                required */}
+                        </div>
+
+                        <div>
+                            <label htmlFor="password" className="sr-only">
+                                Password
+                            </label>
+                            <Input
+                                type={InputType.PASSWORD}
+                                name={"password"}
+                                id={"password"}
+                                autoComplete={true}
+                                placeholder={"Mot de passe"}
+                                leftIcon={KeyIcon}
+                            />
+                        </div>
+
+                        <div>
+                            <Button
+                                type={ButtonType.PRIMARY}
+                                size={ButtonSize.MD}
+                                isSubmit={true}
+                                loading={buttonLoading}
+                                label={"Se connecter"}
+                                className="w-full"
+                            />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div className="rounded-b-lg border-t-2 border-gray-300 bg-gray-100 px-4 py-6 sm:px-10">
+                <p className="text-xs leading-5 text-gray-500">
+                    En vous inscrivant, vous acceptez le{" "}
+                    <a href="#" className="font-medium text-gray-900 hover:underline">
+                        droit du travail russe
+                    </a>
+                    , la{" "}
+                    <a href="#" className="font-medium text-gray-900 hover:underline">
+                        convention de Genève
+                    </a>{" "}
+                    et la{" "}
+                    <a href="#" className="font-medium text-gray-900 hover:underline">
+                        réforme de l'OCM viti-vinicole
+                    </a>
+                    .
+                </p>
+            </div>
+        </div>
+    );
+};
 
 const Home: NextPage = () => {
     return (
