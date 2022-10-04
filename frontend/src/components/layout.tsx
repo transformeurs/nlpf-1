@@ -18,7 +18,8 @@ interface LayoutProps {
 
 const navigation = [
     { name: "Accueil", href: "/" },
-    { name: "Offres", href: "/offers" }
+    { name: "Offres", href: "/offers" },
+    { name: "Candidatures", href: "/candidacies" }
 ];
 
 const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
