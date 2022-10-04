@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { BellIcon, XMarkIcon, Bars3Icon } from "@heroicons/react/24/outline";
 import { BriefcaseIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import { AuthorizationRole, useAuth } from "../context/AuthContext";
 
 interface LayoutProps {
     breadcrumbs?: {
@@ -15,12 +16,6 @@ interface LayoutProps {
     children: ReactNode;
 }
 
-const user = {
-    name: "Tom Cook",
-    email: "tom@example.com",
-    imageUrl: "/images/default.png"
-};
-
 const navigation = [
     { name: "Sessions", href: "/sessions" },
     { name: "Quizzes", href: "/quizzes" },
@@ -28,15 +23,16 @@ const navigation = [
     { name: "Help", href: "/help" }
 ];
 
-const userNavigation = [
-    {
-        name: "Sign out",
-        fun: () => { }
-    }
-];
-
 const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
     const router = useRouter();
+    const { user, disconnect } = useAuth({ requiredRole: AuthorizationRole.All });
+
+    const userNavigation = [
+        {
+            name: "Déconnexion",
+            fun: () => disconnect(),
+        }
+    ];
 
     return (
         <div className="min-h-full">
@@ -46,11 +42,13 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                         <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8 lg:py-0">
                             <div className="relative flex items-center justify-center py-5 lg:justify-between">
                                 {/* Logo */}
-                                <div className="absolute left-0 flex flex-shrink-0 select-none items-center text-lg font-semibold lg:static">
-                                    <BriefcaseIcon className="mr-2 h-8 w-8 text-indigo-300" />
-                                    <span className="text-white">Job</span>
-                                    <span className="text-indigo-300">Board</span>
-                                </div>
+                                <Link href="/">
+                                    <div className="cursor-pointer absolute left-0 flex flex-shrink-0 select-none items-center text-lg font-semibold hover:opacity-75 transition duration-400 ease-in-out lg:static">
+                                        <BriefcaseIcon className="mr-2 h-8 w-8 text-indigo-300" />
+                                        <span className="text-white">Job</span>
+                                        <span className="text-indigo-300">Board</span>
+                                    </div>
+                                </Link>
 
                                 {/* Navigation */}
                                 <div className="hidden items-baseline space-x-4 lg:flex">
@@ -68,54 +66,63 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                             </div>
                                         </Link>
                                     ))}
+                                    {!user && (
+                                        <Link href="/signup">
+                                            <div className="cursor-pointer text-gray-300 border border-gray-300 hover:bg-indigo-600 hover:text-white rounded-md px-3 py-2 text-sm font-medium">
+                                                S'inscrire
+                                            </div>
+                                        </Link>
+                                    )}
                                 </div>
 
-                                {/* Right section on desktop */}
-                                <div className="hidden lg:ml-4 lg:flex lg:items-center lg:pr-0.5">
-                                    <button
-                                        type="button"
-                                        className="flex-shrink-0 rounded-full p-1 text-indigo-200 hover:bg-white hover:bg-opacity-10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                    >
-                                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                                    </button>
-
-                                    {/* Profile dropdown */}
-                                    <Menu as="div" className="relative ml-4 flex-shrink-0">
-                                        <div>
-                                            <Menu.Button className="flex rounded-full bg-white text-sm ring-2 ring-white ring-opacity-20 focus:outline-none focus:ring-opacity-100">
-                                                <img
-                                                    className="h-8 w-8 rounded-full"
-                                                    src={user.imageUrl}
-                                                    alt=""
-                                                />
-                                            </Menu.Button>
-                                        </div>
-                                        <Transition
-                                            as={Fragment}
-                                            leave="transition ease-in duration-75"
-                                            leaveFrom="transform opacity-100 scale-100"
-                                            leaveTo="transform opacity-0 scale-95"
+                                {/* Right section on desktop, only if connected */}
+                                {user && (
+                                    <div className="hidden lg:ml-4 lg:flex lg:items-center lg:pr-0.5">
+                                        <button
+                                            type="button"
+                                            className="flex-shrink-0 rounded-full p-1 text-indigo-200 hover:bg-white hover:bg-opacity-10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                                         >
-                                            <Menu.Items className="absolute -right-2 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                {userNavigation.map((item) => (
-                                                    <Menu.Item key={item.name}>
-                                                        {({ active }) => (
-                                                            <button
-                                                                className={classNames(
-                                                                    active ? "bg-gray-100" : "",
-                                                                    "block w-full px-4 py-2 text-left text-sm text-gray-700"
-                                                                )}
-                                                                onClick={item.fun}
-                                                            >
-                                                                {item.name}
-                                                            </button>
-                                                        )}
-                                                    </Menu.Item>
-                                                ))}
-                                            </Menu.Items>
-                                        </Transition>
-                                    </Menu>
-                                </div>
+                                            <BellIcon className="h-6 w-6" aria-hidden="true" />
+                                        </button>
+
+                                        {/* Profile dropdown */}
+                                        <Menu as="div" className="relative ml-4 flex-shrink-0">
+                                            <div>
+                                                <Menu.Button className="flex rounded-full bg-white text-sm ring-2 ring-white ring-opacity-20 focus:outline-none focus:ring-opacity-100">
+                                                    <img
+                                                        className="h-8 w-8 rounded-full"
+                                                        src={user?.avatarUrl}
+                                                        alt=""
+                                                    />
+                                                </Menu.Button>
+                                            </div>
+                                            <Transition
+                                                as={Fragment}
+                                                leave="transition ease-in duration-75"
+                                                leaveFrom="transform opacity-100 scale-100"
+                                                leaveTo="transform opacity-0 scale-95"
+                                            >
+                                                <Menu.Items className="absolute -right-2 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                    {userNavigation.map((item) => (
+                                                        <Menu.Item key={item.name}>
+                                                            {({ active }) => (
+                                                                <button
+                                                                    className={classNames(
+                                                                        active ? "bg-gray-100" : "",
+                                                                        "block w-full px-4 py-2 text-left text-sm text-gray-700"
+                                                                    )}
+                                                                    onClick={item.fun}
+                                                                >
+                                                                    {item.name}
+                                                                </button>
+                                                            )}
+                                                        </Menu.Item>
+                                                    ))}
+                                                </Menu.Items>
+                                            </Transition>
+                                        </Menu>
+                                    </div>
+                                )}
                                 {/* Menu button */}
                                 <div className="absolute right-0 flex-shrink-0 lg:hidden">
                                     {/* Mobile menu button */}
@@ -230,48 +237,65 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="pt-4 pb-2">
-                                                <div className="flex items-center px-5">
-                                                    <div className="flex-shrink-0">
-                                                        <img
-                                                            className="h-10 w-10 rounded-full"
-                                                            src={user.imageUrl}
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                    <div className="ml-3 min-w-0 flex-1">
-                                                        <div className="truncate text-base font-medium text-gray-800">
-                                                            {user.name}
+                                            {/* User section, displayed if connected */}
+                                            {user && (
+                                                <div className="pt-4 pb-2">
+                                                    <div className="flex items-center px-5">
+                                                        <div className="flex-shrink-0">
+                                                            <img
+                                                                className="h-10 w-10 rounded-full"
+                                                                src={user?.avatarUrl}
+                                                                alt=""
+                                                            />
                                                         </div>
-                                                        <div className="truncate text-sm font-medium text-gray-500">
-                                                            {user.email}
+                                                        <div className="ml-3 min-w-0 flex-1">
+                                                            <div className="truncate text-base font-medium text-gray-800">
+                                                                {user?.name}
+                                                            </div>
+                                                            <div className="truncate text-sm font-medium text-gray-500">
+                                                                {user?.email}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                                    >
-                                                        <span className="sr-only">
-                                                            View notifications
-                                                        </span>
-                                                        <BellIcon
-                                                            className="h-6 w-6"
-                                                            aria-hidden="true"
-                                                        />
-                                                    </button>
-                                                </div>
-                                                <div className="mt-3 space-y-1 px-2">
-                                                    {userNavigation.map((item) => (
                                                         <button
-                                                            key={item.name}
-                                                            className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                                                            onClick={item.fun}
+                                                            type="button"
+                                                            className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                                         >
-                                                            {item.name}
+                                                            <span className="sr-only">
+                                                                View notifications
+                                                            </span>
+                                                            <BellIcon
+                                                                className="h-6 w-6"
+                                                                aria-hidden="true"
+                                                            />
                                                         </button>
-                                                    ))}
+                                                    </div>
+                                                    <div className="mt-3 space-y-1 px-2">
+                                                        {userNavigation.map((item) => (
+                                                            <button
+                                                                key={item.name}
+                                                                className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
+                                                                onClick={item.fun}
+                                                            >
+                                                                {item.name}
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
+                                            {/* SignUp button, NOT displayed if connected */}
+                                            {!user && (
+                                                <div className="pt-2 pb-2">
+                                                    <div className="space-y-1 px-2">
+                                                        <Link href="/signup">
+                                                            <div
+                                                                className="cursor-pointer block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
+                                                            >
+                                                                S'inscrire
+                                                            </div>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </Popover.Panel>
                                 </Transition.Child>

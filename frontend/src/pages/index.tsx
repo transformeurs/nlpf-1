@@ -1,5 +1,6 @@
 import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
+import Link from "next/link";
 import { FC, useState } from "react";
 import Button, { ButtonType, ButtonSize } from "../components/button";
 import Input, { InputType } from "../components/input";
@@ -42,7 +43,7 @@ const LoginForm: FC = () => {
     };
 
     return (
-        <div className="rounded-lg bg-white shadow">
+        <div className="col-span-4 rounded-lg bg-white shadow lg:col-span-1">
             <div className="px-4 py-8 sm:px-10">
                 <div className="text-center text-lg font-semibold">Se connecter</div>
                 <div className="mt-6">
@@ -87,10 +88,15 @@ const LoginForm: FC = () => {
                                 className="w-full"
                             />
                         </div>
+
+                        <p className="text-xs leading-5 text-gray-500 text-center">
+                            Pas de compte ?{" "}
+                            <Link href="/signup"><span className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500">Inscrivez-vous !</span></Link>
+                        </p>
                     </form>
                 </div>
             </div>
-            <div className="rounded-b-lg border-t-2 border-gray-300 bg-gray-100 px-4 py-6 sm:px-10">
+            <div className="rounded-b-lg border-t-2 border-gray-300 bg-gray-100 px-4 py-4 sm:px-6 sm:py-6">
                 <p className="text-xs leading-5 text-gray-500">
                     En vous inscrivant, vous acceptez le{" "}
                     <a href="#" className="font-medium text-gray-900 hover:underline">
@@ -115,7 +121,8 @@ const Home: NextPage = () => {
     return (
         <Layout>
             <div className="grid grid-cols-4 gap-x-4 gap-y-4">
-                <div className="col-span-3 rounded-lg bg-white bg-home bg-cover shadow">
+                {/* Banner */}
+                <div className="col-span-4 rounded-lg bg-white bg-home bg-cover shadow lg:col-span-3">
                     <div
                         className="h-full w-full rounded-lg"
                         style={{ backgroundColor: "hsla(0, 100%, 100%, .6" }}
@@ -155,6 +162,7 @@ const Home: NextPage = () => {
 
                 <LoginForm />
 
+                {/* Numbers */}
                 <div className="col-span-4 mt-8">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-4xl text-center">
