@@ -1,88 +1,90 @@
-import { FC } from "react";
+import { KeyIcon, UserIcon } from "@heroicons/react/20/solid";
+import { FC, useState } from "react";
+import { NotificationStatus, useNotification } from "../context/NotificationContext";
+import { fetchApi, FetchMethod } from "../utils/fetch";
+import Button, { ButtonSize, ButtonType } from "./button";
+import Input, { InputType } from "./input";
 
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const LoginForm: FC = () => {
+    const { addNotification } = useNotification();
+    const [buttonLoading, setButtonLoading] = useState(false);
+
     // Handles the submit event on form submit
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         // Prevents the default behavior of the form (submitting and refreshing the page)
         event.preventDefault();
 
-        // Get data from the form
-        const data = {
+        setButtonLoading(true);
+        const response = await fetchApi("/account/login", FetchMethod.POST, {
             email: event.currentTarget.email.value,
             password: event.currentTarget.password.value
-        };
+        });
+        setButtonLoading(false);
 
-        const JSONdata = JSON.stringify(data);
+        if (!response) {
+            addNotification(
+                NotificationStatus.Error,
+                "Le serveur ne répond pas, vérifiez votre connexion internet."
+            );
+        } else if (response.statusCode === 401) {
+            addNotification(NotificationStatus.Error, "Email ou mot de passe incorrect.");
+        } else if (response.statusCode === 200) {
+            // TODO: Remove this, will be replaced with storing the token in the browser's local storage
+            alert(`Your token is ${response.data.access_token}`);
 
-        // TODO: Use environment variables
-        const endpoint = 'http://localhost:8000/account/login';
-
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSONdata
-        };
-
-        const response = await fetch(endpoint, options);
-
-        const result = await response.json();
-
-        // TODO: Remove this, will be replaced with storing the token in the browser's local storage
-        alert(`Your token is ${result.access_token}`);
-
-        // TODO:
-        // - Redirect to home page if authenticated
-        // - Display error message if auth failed
-    }
+            // TODO:
+            // - Redirect to home page if authenticated
+            // - Display error message if auth failed
+        }
+    };
 
     return (
         <div className="rounded-lg bg-white shadow">
             <div className="px-4 py-8 sm:px-10">
-                <div className="text-center text-lg font-semibold">
-                    Se connecter
-                </div>
+                <div className="text-center text-lg font-semibold">Se connecter</div>
                 <div className="mt-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label htmlFor="email" className="sr-only">
                                 Mobile number or email
                             </label>
-                            <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                autoComplete="email"
-                                placeholder="Adresse e-mail"
-                                required
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            <Input
+                                type={InputType.EMAIL}
+                                name={"email"}
+                                id={"email"}
+                                autoComplete={true}
+                                placeholder={"Adresse e-mail"}
+                                leftIcon={UserIcon}
                             />
+                            {/* autoComplete="email"
+                                required */}
                         </div>
 
                         <div>
                             <label htmlFor="password" className="sr-only">
                                 Password
                             </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="Mot de passe"
-                                autoComplete="current-password"
-                                required
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            <Input
+                                type={InputType.PASSWORD}
+                                name={"password"}
+                                id={"password"}
+                                autoComplete={true}
+                                placeholder={"Mot de passe"}
+                                leftIcon={KeyIcon}
                             />
                         </div>
 
                         <div>
-                            <button
-                                type="submit"
-                                className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
-                                Se connecter
-                            </button>
+                            <Button
+                                type={ButtonType.PRIMARY}
+                                size={ButtonSize.MD}
+                                isSubmit={true}
+                                loading={buttonLoading}
+                                label={"Se connecter"}
+                                className="w-full"
+                            />
                         </div>
                     </form>
                 </div>

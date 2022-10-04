@@ -29,11 +29,17 @@ const Modal: FC<ModalProps> = ({ type, icon, title, open, setOpen, buttons, chil
 	const focusButtonRef = useRef(null);
 
 	const modalIcon = {
-		[ModalIcon.SUCCESS]: [<CheckIcon className="h-6 w-6 text-green-400" />, "bg-green-100"],
-		[ModalIcon.ERROR]: [<XMarkIcon className="h-6 w-6 text-red-500" />, "bg-red-100"],
+		[ModalIcon.SUCCESS]: [
+			<CheckIcon className="h-6 w-6 text-green-400 dark:text-green-100" />,
+			"bg-green-100 dark:bg-green-600"
+		],
+		[ModalIcon.ERROR]: [
+			<XMarkIcon className="h-6 w-6 text-red-500 dark:text-red-100" />,
+			"bg-red-100 dark:bg-red-600"
+		],
 		[ModalIcon.INFORMATION]: [
-			<InformationCircleIcon className="h-6 w-6 text-blue-500" />,
-			"bg-blue-100"
+			<InformationCircleIcon className="h-6 w-6 text-blue-500 dark:text-blue-100" />,
+			"bg-blue-100 dark:bg-blue-600"
 		]
 	}[icon];
 
@@ -54,7 +60,7 @@ const Modal: FC<ModalProps> = ({ type, icon, title, open, setOpen, buttons, chil
 					leaveFrom="opacity-100"
 					leaveTo="opacity-0"
 				>
-					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-gray-700 dark:bg-opacity-75" />
+					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-gray-900 dark:bg-opacity-75" />
 				</Transition.Child>
 
 				<div className="fixed inset-0 z-10 overflow-y-auto">

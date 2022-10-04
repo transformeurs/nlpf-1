@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import classNames from "../utils/classNames";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";

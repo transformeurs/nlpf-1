@@ -1,6 +1,7 @@
-import { ChangeEvent, ComponentType, FC, useState } from "react";
+import { ChangeEvent, ComponentType, FC, useEffect, useState } from "react";
 import classNames from "../utils/classNames";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import LoadingIcon from "./loadingIcon";
 
 export enum InputType {
 	TEXT,
@@ -22,7 +23,8 @@ export interface InputProps {
 	leftIcon?: ComponentType<{ className?: string }>;
 	rightIcon?: ComponentType<{ className?: string }>;
 	disabled?: boolean;
-	errorFun?: (value: string) => string | null;
+	autoComplete?: boolean;
+	error?: string | ((value: string) => Promise<string | null>);
 	className?: string;
 	onChange?: (value: string | null) => void;
 }
@@ -41,17 +43,55 @@ const Input: FC<InputProps> = ({
 	leftIcon: LeftIcon,
 	rightIcon: RightIcon,
 	disabled,
-	errorFun,
+	autoComplete,
+	error,
 	className,
 	onChange
 }) => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [inputLoading, setInputLoading] = useState<boolean>(false);
+	const [validator, setValidator] = useState<NodeJS.Timeout | null>(null);
+
+	useEffect(() => {
+		if (typeof error === "string") setErrorMessage(error);
+	}, [error]);
 
 	const inputType = {
 		[InputType.TEXT]: "text",
 		[InputType.PASSWORD]: "password",
 		[InputType.EMAIL]: "email"
 	}[type];
+
+	const onChangeEvent = async (e: ChangeEvent<HTMLInputElement>) => {
+		const newTimeout = setTimeout(async () => {
+			if (error) {
+				if (typeof error === "function") {
+					await setInputLoading(true);
+					const errorMessage = await error(e.target.value);
+					await setInputLoading(false);
+
+					if (errorMessage) {
+						setErrorMessage(errorMessage);
+						onChange && onChange(null);
+						return;
+					}
+				} else {
+					onChange && onChange(e.target.value);
+					return;
+				}
+			}
+
+			setErrorMessage(null);
+			onChange && onChange(e.target.value);
+		}, 500);
+
+		setValidator((previousValidator) => {
+			if (previousValidator) {
+				clearTimeout(previousValidator);
+			}
+			return newTimeout;
+		});
+	};
 
 	return (
 		<div>
@@ -62,7 +102,11 @@ const Input: FC<InputProps> = ({
 						errorMessage ? "text-red-500" : "text-gray-400"
 					)}
 				>
-					{LeftIcon && <LeftIcon className="h-5 w-5" aria-hidden="true" />}
+					{inputLoading ? (
+						<LoadingIcon className="h-5 w-5" />
+					) : (
+						LeftIcon && <LeftIcon className="h-5 w-5" aria-hidden="true" />
+					)}
 					{prefix}
 				</div>
 				<input
@@ -71,11 +115,12 @@ const Input: FC<InputProps> = ({
 					id={id}
 					value={value}
 					defaultValue={defaultValue}
+					autoComplete={autoComplete ? "on" : "off"}
 					className={classNames(
 						"block w-full rounded-md shadow-sm sm:text-sm",
 						"bg-white disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 dark:bg-gray-700",
 						errorMessage
-							? "border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500"
+							? "border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500 dark:text-red-500"
 							: "border-gray-300 text-black focus:border-blue-500 focus:ring-blue-500 dark:border-gray-500 dark:text-gray-300",
 						prefixSize ? prefixSize : LeftIcon && "pl-10",
 						suffixSize ? suffixSize : RightIcon && "pr-10",
@@ -83,15 +128,7 @@ const Input: FC<InputProps> = ({
 					)}
 					placeholder={placeholder}
 					disabled={disabled}
-					onChange={(e: ChangeEvent<HTMLInputElement>) => {
-						if (errorFun && errorFun(e.target.value)) {
-							setErrorMessage(errorFun(e.target.value));
-							onChange && onChange(null);
-						} else {
-							setErrorMessage(null);
-							onChange && onChange(e.target.value);
-						}
-					}}
+					onChange={onChangeEvent}
 				/>
 				<div
 					className={classNames(
@@ -106,7 +143,9 @@ const Input: FC<InputProps> = ({
 					{RightIcon && <RightIcon className="h-5 w-5" aria-hidden="true" />}
 				</div>
 			</div>
-			{errorMessage && <p className="mt-2 text-sm text-red-600">{errorMessage}</p>}
+			{errorMessage && (
+				<p className="mt-2 text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
+			)}
 		</div>
 	);
 };
