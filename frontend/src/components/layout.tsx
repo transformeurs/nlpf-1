@@ -22,16 +22,14 @@ const user = {
 };
 
 const navigation = [
-    { name: "Sessions", href: "/sessions" },
-    { name: "Quizzes", href: "/quizzes" },
-    { name: "Settings", href: "/settings" },
-    { name: "Help", href: "/help" }
+    { name: "Accueil", href: "/" },
+    { name: "Offres", href: "/offers" }
 ];
 
 const userNavigation = [
     {
         name: "Sign out",
-        fun: () => { }
+        fun: () => {}
     }
 ];
 
@@ -59,7 +57,7 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                             <div
                                                 className={classNames(
                                                     router.pathname === item.href
-                                                        ? "bg-gray-900 text-white"
+                                                        ? "text-white underline underline-offset-4"
                                                         : "text-gray-300 hover:bg-indigo-600 hover:text-white",
                                                     "cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
                                                 )}
