@@ -2,7 +2,7 @@ import { FC, Fragment, ReactNode, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Button, { ButtonSize, ButtonType } from "./button";
-import classNames from "classnames";
+import classNames from "../utils/classNames";
 
 export enum ModalType {
 	SIMPLE,
@@ -87,7 +87,7 @@ const Modal: FC<ModalProps> = ({ type, icon, title, open, setOpen, buttons, chil
 								<div>
 									<div
 										className={classNames(
-											modalIcon[1],
+											modalIcon[1] as string,
 											"mx-auto flex h-12 w-12 items-center justify-center rounded-full"
 										)}
 									>

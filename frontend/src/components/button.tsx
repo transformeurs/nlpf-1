@@ -74,7 +74,7 @@ const Button: FC<ButtonProps> = ({
 				disabled
 					? "cursor-not-allowed border-transparent bg-gray-400 text-white dark:bg-gray-600"
 					: buttonType,
-				loading && "cursor-wait",
+				loading ? "cursor-wait" : "",
 				buttonSize,
 				className
 			)}

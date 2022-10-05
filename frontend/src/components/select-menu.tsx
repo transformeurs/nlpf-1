@@ -1,5 +1,5 @@
 import { FC, Fragment, useEffect, useState } from "react";
-import classNames from "classnames";
+import classNames from "../utils/classNames";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
