@@ -58,12 +58,11 @@ const LoginForm: FC = () => {
                                 type={InputType.EMAIL}
                                 name={"email"}
                                 id={"email"}
-                                autoComplete={true}
+                                autoComplete={"email"}
                                 placeholder={"Adresse de courriel"}
                                 leftIcon={UserIcon}
+                                required
                             />
-                            {/* autoComplete="email"
-                                required */}
                         </div>
 
                         <div>
@@ -74,9 +73,10 @@ const LoginForm: FC = () => {
                                 type={InputType.PASSWORD}
                                 name={"password"}
                                 id={"password"}
-                                autoComplete={true}
+                                autoComplete={"current-password"}
                                 placeholder={"Mot de passe"}
                                 leftIcon={KeyIcon}
+                                required
                             />
                         </div>
 

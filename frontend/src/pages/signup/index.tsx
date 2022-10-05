@@ -6,6 +6,7 @@ import { FC, useState } from "react";
 import Button, { ButtonType, ButtonSize } from "../../components/button";
 import Input, { InputType } from "../../components/input";
 import Layout from "../../components/layout";
+import TextArea from "../../components/textarea";
 import { useNotification, NotificationStatus } from "../../context/NotificationContext";
 import { fetchApi, uploadFormImage, FetchMethod } from "../../utils/fetch";
 
@@ -98,12 +99,14 @@ const SignUpForm: FC = () => {
                     <div className="text-center text-lg font-semibold">Inscription</div>
                     <div className="mt-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <div>Qui êtes-vous ?</div>
-                                <input type="radio" value="candidates" id="candidateRole" onChange={handleUserRoleChange} checked={userRole === "candidates"} />
-                                <label htmlFor="candidateRole" className="ml-2">Candidat</label>
-                                <input type="radio" value="companies" id="companyRole" onChange={handleUserRoleChange} checked={userRole === "companies"} />
-                                <label htmlFor="companyRole" className="ml-2">Entreprise</label>
+                            <div className="grid justify-center items-center">
+                                <div className="text-center italic mb-2">Qui êtes-vous ?</div>
+                                <div>
+                                    <input type="radio" value="candidates" id="candidateRole" onChange={handleUserRoleChange} checked={userRole === "candidates"} />
+                                    <label htmlFor="candidateRole" className="ml-2 mr-5">Candidat·e</label>
+                                    <input type="radio" value="companies" id="companyRole" onChange={handleUserRoleChange} checked={userRole === "companies"} />
+                                    <label htmlFor="companyRole" className="ml-2">Entreprise</label>
+                                </div>
                             </div>
 
                             <div>
@@ -114,11 +117,11 @@ const SignUpForm: FC = () => {
                                     type={InputType.TEXT}
                                     name={"username"}
                                     id={"username"}
-                                    autoComplete={true}
+                                    autoComplete={"name"}
                                     placeholder={userRole === "candidates" ? "Votre nom" : "Nom de l'entreprise"}
                                     leftIcon={userRole === "candidates" ? UserIcon : BuildingOfficeIcon}
+                                    required
                                 />
-                                {/* required */}
                             </div>
 
                             <div>
@@ -129,12 +132,11 @@ const SignUpForm: FC = () => {
                                     type={InputType.EMAIL}
                                     name={"email"}
                                     id={"email"}
-                                    autoComplete={true}
+                                    autoComplete={"email"}
                                     placeholder={"Adresse de courriel"}
                                     leftIcon={EnvelopeIcon}
+                                    required
                                 />
-                                {/* autoComplete="email"
-                                required */}
                             </div>
 
                             <div>
@@ -145,11 +147,11 @@ const SignUpForm: FC = () => {
                                     type={InputType.PASSWORD}
                                     name={"password"}
                                     id={"password"}
-                                    autoComplete={true}
+                                    autoComplete={"new-password"}
                                     placeholder={"Mot de passe"}
                                     leftIcon={KeyIcon}
+                                    required
                                 />
-                                {/* required */}
                             </div>
 
                             <div>
@@ -160,52 +162,52 @@ const SignUpForm: FC = () => {
                                     type={InputType.PASSWORD}
                                     name={"passwordConfirm"}
                                     id={"passwordConfirm"}
-                                    autoComplete={true}
+                                    autoComplete={"new-password"}
                                     placeholder={"Confirmer le mot de passe"}
                                     leftIcon={KeyIcon}
+                                    required
                                 />
-                                {/* required */}
                             </div>
 
                             <div>
-                                <label htmlFor="description">
-                                    Description
-                                </label>
-
                                 <div>
-                                    <textarea name="description" id="description" placeholder={
-                                        userRole === "candidates" ? "Parlez-nous de vous..." : "Décrivez votre entreprise..."
-                                    }></textarea>
+                                    <TextArea
+                                        name="description"
+                                        id="description"
+                                        rows={5}
+                                        placeholder={
+                                            userRole === "candidates" ? "Décrivez vous en quelques mots..." : "Décrivez votre entreprise..."
+                                        }
+                                    />
                                 </div>
                             </div>
 
                             {userRole == "candidates" && (
                                 <div>
                                     <label htmlFor="pronouns">
-                                        Pronouns
+                                        Vos pronoms
                                     </label>
                                     <Input
                                         type={InputType.TEXT}
                                         name={"pronouns"}
                                         id={"pronouns"}
-                                        autoComplete={true}
                                         placeholder={"il/lui, elle/elle, ils/leur, elles/leur, etc..."}
                                     />
-                                    {/* required */}
                                 </div>
                             )}
 
                             <div>
                                 Photo de profil
-                                <div>
+                                <div className="mt-3">
                                     <Button
                                         type={ButtonType.SECONDARY}
                                         size={ButtonSize.MD}
                                         label={"Choisir une photo"}
                                         onClick={handleFileClick}
                                     />
-                                    <span ref={fileName}>Aucun fichier choisi</span>
+                                    <span ref={fileName} className="ml-3 text-s text-gray-600">Aucun fichier choisi</span>
                                 </div>
+                                {/* Hidden file input, handled by the Button component */}
                                 <input type="file" id="photo" name="photo" ref={hiddenFileInput} style={{ display: 'none' }} onChange={handleFileChange} />
                             </div>
 

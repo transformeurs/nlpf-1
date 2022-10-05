@@ -23,7 +23,8 @@ export interface InputProps {
 	leftIcon?: ComponentType<{ className?: string }>;
 	rightIcon?: ComponentType<{ className?: string }>;
 	disabled?: boolean;
-	autoComplete?: boolean;
+	autoComplete?: string;
+	required?: boolean;
 	error?: string | ((value: string) => Promise<string | null>);
 	className?: string;
 	onChange?: (value: string | null) => void;
@@ -44,6 +45,7 @@ const Input: FC<InputProps> = ({
 	rightIcon: RightIcon,
 	disabled,
 	autoComplete,
+	required,
 	error,
 	className,
 	onChange
@@ -115,7 +117,8 @@ const Input: FC<InputProps> = ({
 					id={id}
 					value={value}
 					defaultValue={defaultValue}
-					autoComplete={autoComplete ? "on" : "off"}
+					autoComplete={autoComplete ?? "off"}
+					required={required}
 					className={classNames(
 						"block w-full rounded-md shadow-sm sm:text-sm",
 						"bg-white disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 dark:bg-gray-700",
