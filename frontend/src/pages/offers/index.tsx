@@ -2,9 +2,9 @@ import { BuildingOfficeIcon, CalendarIcon, EnvelopeIcon } from "@heroicons/react
 import { CursorArrowRaysIcon } from "@heroicons/react/24/solid";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import type { NextPage } from "next";
-import Button, { ButtonSize, ButtonType } from "../components/button";
-import Layout from "../components/layout";
-import LoginForm from "../components/loginForm";
+import Button, { ButtonSize, ButtonType } from "../../components/button";
+import Layout from "../../components/layout";
+import LoginForm from "../../components/loginForm";
 
 const Home: NextPage = () => {
     const offers = [
