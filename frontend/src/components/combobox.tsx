@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import classNames from "../utils/classNames";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
@@ -40,8 +40,8 @@ const ComboBox: FC<ComboBoxProps> = ({ id, name, value, values, className, onCha
 		query === ""
 			? values
 			: values.filter((value) => {
-					return value.label.toLowerCase().includes(query.toLowerCase());
-			  });
+				return value.label.toLowerCase().includes(query.toLowerCase());
+			});
 
 	const categories: { name: string | undefined; values: ValueType[] }[] = [];
 	filteredValues.forEach((value) => {
@@ -112,7 +112,7 @@ const ComboBox: FC<ComboBoxProps> = ({ id, name, value, values, className, onCha
 														<span
 															className={classNames(
 																"truncate text-gray-800 dark:text-gray-200",
-																selected && "font-semibold"
+																selected ? "font-semibold" : ""
 															)}
 														>
 															{value.label}

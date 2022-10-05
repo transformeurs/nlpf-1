@@ -2,9 +2,8 @@ from . import schemas, crud
 from fastapi import APIRouter, HTTPException, Depends, UploadFile
 from typing import List
 from sqlalchemy.orm import Session
-import os
 
-from ..utils import password
+from ..utils import password, s3
 
 from ..dependencies import get_db, get_s3_resource
 
@@ -39,13 +38,8 @@ async def create_candidate(candidate: schemas.CandidateCreate, db: Session = Dep
 
 
 @router.post("/candidates/uploadImage")
-async def create_upload_file(file: UploadFile):
-    s3_resource = get_s3_resource()
-    bucket = s3_resource.Bucket('candidate-images')
-    obj = bucket.Object(file.filename)
-    obj.upload_fileobj(file.file, ExtraArgs={'ContentType': file.content_type})
-
-    return {"filename": f'{os.getenv("AWS_S3_ENDPOINT")}/candidate-images/{obj.key}'}
+async def create_upload_file(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+    return s3.upload_file_to_bucket(s3_resource, 'candidate-images', file)
 
 # Candidate Login --------------------------------------------------------------
 
@@ -61,6 +55,6 @@ async def get_current_candidate(account: Account = Depends(get_current_account),
     return db_candidate
 
 # Route that return the current connected candidate with its token
-@router.get("/candidates/me", response_model=schemas.Candidate)
+@router.get("/candidates/me/", response_model=schemas.Candidate)
 async def get_me(candidate: schemas.Candidate = Depends(get_current_candidate)):
     return candidate

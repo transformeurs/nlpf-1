@@ -6,6 +6,8 @@ import Head from "next/head";
 import { NotificationsProvider } from "../context/NotificationContext";
 import Notifications from "../components/notifications";
 import { NextPage } from "next";
+import { fetchFun } from "../utils/fetch";
+import { AuthProvider } from "../context/AuthContext";
 
 type NextPageWithLayout = NextPage & {
     getLayout?: (page: ReactElement) => ReactNode;
@@ -21,15 +23,17 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     return (
         <SWRConfig
             value={{
-                fetcher: (resource, init) => fetch(resource, init).then((res) => res.json())
+                fetcher: fetchFun
             }}
         >
             <Head>
                 <title>JobBoard</title>
             </Head>
             <NotificationsProvider>
-                {getLayout(<Component {...pageProps} />)}
-                <Notifications />
+                <AuthProvider>
+                    {getLayout(<Component {...pageProps} />)}
+                    <Notifications />
+                </AuthProvider>
             </NotificationsProvider>
         </SWRConfig>
     );

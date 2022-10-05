@@ -1,12 +1,130 @@
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
+import Link from "next/link";
+import { FC, useState } from "react";
+import Button, { ButtonType, ButtonSize } from "../components/button";
+import Input, { InputType } from "../components/input";
 import Layout from "../components/layout";
+import { AuthorizationRole, useAuth } from "../context/AuthContext";
+import { NotificationStatus, useNotification } from "../context/NotificationContext";
+import { fetchApi, FetchMethod } from "../utils/fetch";
+
+const LoginForm: FC = () => {
+    const { setToken } = useAuth({
+        requiredRole: AuthorizationRole.Visitor,
+        redirectUrl: "/afterLogin",
+    });
+    const { addNotification } = useNotification();
+    const [buttonLoading, setButtonLoading] = useState(false);
+
+    // Handles the submit event on form submit
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        // Prevents the default behavior of the form (submitting and refreshing the page)
+        event.preventDefault();
+
+        setButtonLoading(true);
+        const response = await fetchApi("/account/login", FetchMethod.POST, {
+            email: event.currentTarget.email.value,
+            password: event.currentTarget.password.value
+        });
+        setButtonLoading(false);
+
+        if (!response) {
+            addNotification(
+                NotificationStatus.Error,
+                "Le serveur ne répond pas, veuillez vérifier votre connexion internet."
+            );
+        } else if (response.statusCode === 401) {
+            addNotification(NotificationStatus.Error, "Courriel ou mot de passe incorrect.");
+            (event.target as HTMLFormElement).reset(); // Clear the form
+        } else if (response.statusCode === 200) {
+            setToken(response.data.access_token);
+        } else {
+            addNotification(NotificationStatus.Error, "Une erreur inconnue est survenue.");
+        }
+    };
+
+    return (
+        <div className="col-span-4 rounded-lg bg-white shadow lg:col-span-1">
+            <div className="px-4 py-8 sm:px-10">
+                <div className="text-center text-lg font-semibold">Se connecter</div>
+                <div className="mt-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label htmlFor="email" className="sr-only">
+                                E-mail
+                            </label>
+                            <Input
+                                type={InputType.EMAIL}
+                                name={"email"}
+                                id={"email"}
+                                autoComplete={"email"}
+                                placeholder={"Adresse de courriel"}
+                                leftIcon={UserIcon}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="password" className="sr-only">
+                                Password
+                            </label>
+                            <Input
+                                type={InputType.PASSWORD}
+                                name={"password"}
+                                id={"password"}
+                                autoComplete={"current-password"}
+                                placeholder={"Mot de passe"}
+                                leftIcon={KeyIcon}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <Button
+                                type={ButtonType.PRIMARY}
+                                size={ButtonSize.MD}
+                                isSubmit={true}
+                                loading={buttonLoading}
+                                label={"Se connecter"}
+                                className="w-full"
+                            />
+                        </div>
+
+                        <p className="text-xs leading-5 text-gray-500 text-center">
+                            Pas de compte ?{" "}
+                            <Link href="/signup"><span className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500">Inscrivez-vous !</span></Link>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <div className="rounded-b-lg border-t-2 border-gray-300 bg-gray-100 px-4 py-4 sm:px-6 sm:py-6">
+                <p className="text-xs leading-5 text-gray-500">
+                    En vous inscrivant, vous acceptez le{" "}
+                    <a href="#" className="font-medium text-gray-900 hover:underline">
+                        droit du travail russe
+                    </a>
+                    , la{" "}
+                    <a href="#" className="font-medium text-gray-900 hover:underline">
+                        convention de Genève
+                    </a>{" "}
+                    et la{" "}
+                    <a href="#" className="font-medium text-gray-900 hover:underline">
+                        réforme de l'OCM viti-vinicole
+                    </a>
+                    .
+                </p>
+            </div>
+        </div>
+    );
+};
 
 const Home: NextPage = () => {
     return (
         <Layout>
             <div className="grid grid-cols-4 gap-x-4 gap-y-4">
-                <div className="col-span-3 rounded-lg bg-white bg-home bg-cover shadow">
+                {/* Banner */}
+                <div className="col-span-4 rounded-lg bg-white bg-home bg-cover shadow lg:col-span-3">
                     <div
                         className="h-full w-full rounded-lg"
                         style={{ backgroundColor: "hsla(0, 100%, 100%, .6" }}
@@ -43,88 +161,10 @@ const Home: NextPage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="rounded-lg bg-white shadow">
-                    <div className="px-4 py-8 sm:px-10">
-                        <div className="text-center text-lg font-semibold">
-                            Pas encore de compte ?
-                        </div>
-                        <div className="mt-6">
-                            <form action="#" method="POST" className="space-y-6">
-                                <div>
-                                    <label htmlFor="name" className="sr-only">
-                                        Full name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        id="name"
-                                        autoComplete="name"
-                                        placeholder="Nom complet"
-                                        required
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    />
-                                </div>
 
-                                <div>
-                                    <label htmlFor="mobile-or-email" className="sr-only">
-                                        Mobile number or email
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="mobile-or-email"
-                                        id="mobile-or-email"
-                                        autoComplete="email"
-                                        placeholder="Adresse e-mail"
-                                        required
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    />
-                                </div>
+                <LoginForm />
 
-                                <div>
-                                    <label htmlFor="password" className="sr-only">
-                                        Password
-                                    </label>
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        placeholder="Mot de passe"
-                                        autoComplete="current-password"
-                                        required
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    />
-                                </div>
-
-                                <div>
-                                    <button
-                                        type="submit"
-                                        className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    >
-                                        Create your account
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div className="rounded-b-lg border-t-2 border-gray-300 bg-gray-100 px-4 py-6 sm:px-10">
-                        <p className="text-xs leading-5 text-gray-500">
-                            En vous inscrivant, vous acceptez le{" "}
-                            <a href="#" className="font-medium text-gray-900 hover:underline">
-                                droit du travail russe
-                            </a>
-                            , la{" "}
-                            <a href="#" className="font-medium text-gray-900 hover:underline">
-                                convention de Genève
-                            </a>{" "}
-                            et la{" "}
-                            <a href="#" className="font-medium text-gray-900 hover:underline">
-                                réforme de l'OCM viti-vinicole
-                            </a>
-                            .
-                        </p>
-                    </div>
-                </div>
-
+                {/* Numbers */}
                 <div className="col-span-4 mt-8">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mx-auto max-w-4xl text-center">

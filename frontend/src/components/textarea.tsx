@@ -3,23 +3,14 @@ import classNames from "../utils/classNames";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import LoadingIcon from "./loadingIcon";
 
-export enum InputType {
-	TEXT,
-	PASSWORD,
-	EMAIL
-}
-
-export interface InputProps {
-	type: InputType;
+export interface TextAreaProps {
 	name: string;
 	id: string;
 	value?: string;
+	rows?: number;
+	cols?: number;
 	defaultValue?: string;
 	placeholder?: string;
-	prefix?: string;
-	prefixSize?: string;
-	suffix?: string;
-	suffixSize?: string;
 	leftIcon?: ComponentType<{ className?: string }>;
 	rightIcon?: ComponentType<{ className?: string }>;
 	disabled?: boolean;
@@ -30,17 +21,14 @@ export interface InputProps {
 	onChange?: (value: string | null) => void;
 }
 
-const Input: FC<InputProps> = ({
-	type,
+const TextArea: FC<TextAreaProps> = ({
 	name,
 	id,
+	rows,
+	cols,
 	value,
 	defaultValue,
 	placeholder,
-	prefix,
-	prefixSize,
-	suffix,
-	suffixSize,
 	leftIcon: LeftIcon,
 	rightIcon: RightIcon,
 	disabled,
@@ -58,13 +46,7 @@ const Input: FC<InputProps> = ({
 		if (typeof error === "string") setErrorMessage(error);
 	}, [error]);
 
-	const inputType = {
-		[InputType.TEXT]: "text",
-		[InputType.PASSWORD]: "password",
-		[InputType.EMAIL]: "email"
-	}[type];
-
-	const onChangeEvent = async (e: ChangeEvent<HTMLInputElement>) => {
+	const onChangeEvent = async (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const newTimeout = setTimeout(async () => {
 			if (error) {
 				if (typeof error === "function") {
@@ -109,12 +91,13 @@ const Input: FC<InputProps> = ({
 					) : (
 						LeftIcon && <LeftIcon className="h-5 w-5" aria-hidden="true" />
 					)}
-					{prefix}
+
 				</div>
-				<input
-					type={inputType}
+				<textarea
 					name={name}
 					id={id}
+					rows={rows}
+					cols={cols}
 					value={value}
 					defaultValue={defaultValue}
 					autoComplete={autoComplete ?? "off"}
@@ -125,8 +108,6 @@ const Input: FC<InputProps> = ({
 						errorMessage
 							? "border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500 dark:text-red-500"
 							: "border-gray-300 text-black focus:border-blue-500 focus:ring-blue-500 dark:border-gray-500 dark:text-gray-300",
-						prefixSize ? prefixSize : LeftIcon && "pl-10",
-						suffixSize ? suffixSize : RightIcon && "pr-10",
 						className
 					)}
 					placeholder={placeholder}
@@ -139,7 +120,6 @@ const Input: FC<InputProps> = ({
 						errorMessage ? "text-red-500" : "text-gray-400"
 					)}
 				>
-					<span className="mr-2">{suffix}</span>
 					{errorMessage && (
 						<ExclamationCircleIcon className="h-5 w-5" aria-hidden="true" />
 					)}
@@ -153,4 +133,4 @@ const Input: FC<InputProps> = ({
 	);
 };
 
-export default Input;
+export default TextArea;

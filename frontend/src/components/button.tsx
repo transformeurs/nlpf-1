@@ -1,38 +1,5 @@
-import {
-	ButtonHTMLAttributes,
-	ComponentType,
-	FC,
-	ReactElement,
-	ReactNode,
-	RefObject,
-	useEffect,
-	useState
-} from "react";
-import { Fragment } from "react";
-import { Menu, Popover, Transition } from "@headlessui/react";
+import { ComponentType, FC, RefObject } from "react";
 import classNames from "../utils/classNames";
-import {
-	ArrowRightOnRectangleIcon,
-	Bars3Icon,
-	BellIcon,
-	Cog6ToothIcon,
-	ComputerDesktopIcon,
-	HomeIcon,
-	LifebuoyIcon,
-	MagnifyingGlassIcon,
-	MoonIcon,
-	StarIcon,
-	SunIcon,
-	UserIcon,
-	UsersIcon,
-	WalletIcon,
-	XMarkIcon
-} from "@heroicons/react/24/outline";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { FireIcon } from "@heroicons/react/24/solid";
-import { useTheme } from "next-themes";
-import { IconType } from "recharts/types/component/DefaultLegendContent";
 import LoadingIcon from "./loadingIcon";
 
 export enum ButtonType {
@@ -82,7 +49,7 @@ const Button: FC<ButtonProps> = ({
 		[ButtonType.PRIMARY]:
 			"border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
 		[ButtonType.SECONDARY]:
-			"border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-gray-800",
+			"border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-gray-800 dark:hover:bg-gray-600",
 		[ButtonType.SUCCESS]:
 			"border-transparent bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
 		[ButtonType.WARNING]:
@@ -105,21 +72,28 @@ const Button: FC<ButtonProps> = ({
 			className={classNames(
 				"inline-flex items-center justify-center rounded border font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2",
 				disabled
-					? "cursor-not-allowed border-transparent bg-gray-400 text-white"
+					? "cursor-not-allowed border-transparent bg-gray-400 text-white dark:bg-gray-600"
 					: buttonType,
+				loading ? "cursor-wait" : "",
 				buttonSize,
 				className
 			)}
 			disabled={disabled}
-			onClick={onClick}
+			onClick={() => {
+				if (loading) return;
+				onClick && onClick();
+			}}
 			ref={forwardedRef}
 		>
-			{LeftIcon &&
-				(loading ? (
+			{LeftIcon ? (
+				loading ? (
 					<LoadingIcon className="mr-2 h-5 w-5" />
 				) : (
 					<LeftIcon className="mr-1.5 h-6 w-6" />
-				))}
+				)
+			) : (
+				loading && <LoadingIcon className="mr-2 h-5 w-5" />
+			)}
 			{label}
 			{RightIcon &&
 				(loading ? (
