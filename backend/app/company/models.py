@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-
+from sqlalchemy.orm import relationship
 from ..database import Base
 
 class Company(Base):
@@ -10,3 +10,5 @@ class Company(Base):
     name = Column(String, index=True)
     photo_url = Column(String, index=True)
     description = Column(String, index=True)
+
+    offers = relationship("Offer", back_populates="company")
