@@ -1,11 +1,25 @@
-from typing import Union
+from typing import Union, List
+import datetime
+from ..company.schemas import Company
 from pydantic import BaseModel, EmailStr
 
-class CompanyCreate(BaseModel):
-    id: int
+class OfferCreate(BaseModel):
+    title: str
+    description: str
+    company_id: int
+    created_at: Union[datetime.datetime, None] = None
+    skills: List[str]
 
-class Company(BaseModel):
+class Offer(BaseModel):
     id: int
+    title: str
+    description: str
+    created_at: datetime.datetime
+    author: str
+    contact: str
+    skills: List[str]
+    response_time: int
+    
 
     class Config:
         orm_mode = True

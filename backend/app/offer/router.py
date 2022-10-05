@@ -13,6 +13,18 @@ from ..account.models import Account
 
 router = APIRouter()
 
-@router.get("/offer")
-async def read_companies():
-    return {"Hello": "World"}
+@router.post("/offers", response_model=schemas.Offer)
+async def create_offer(offer: schemas.OfferCreate, db: Session = Depends(get_db)):
+    db_offer = crud.create_offer(db, offer)
+    
+    skills = db_offer.skills.split(",")
+    return schemas.Offer(
+        id=db_offer.id,
+        title=db_offer.title,
+        description=db_offer.description,
+        created_at=db_offer.created_at,
+        author=db_offer.company.name,
+        contact=db_offer.company.email,
+        skills=skills,
+        response_time=0
+    )
