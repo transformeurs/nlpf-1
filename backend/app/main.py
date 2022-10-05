@@ -9,6 +9,7 @@ from .database import engine, Base
 from .candidate.router import router as CandidateRouter
 from .account.router import router as AccountRouter
 from .company.router import router as CompanyRouter
+from .offer.router import router as OfferRouter
 
 
 Base.metadata.create_all(bind=engine)
@@ -20,3 +21,4 @@ app = FastAPI()
 app.include_router(CandidateRouter)
 app.include_router(AccountRouter)
 app.include_router(CompanyRouter)
+app.include_router(OfferRouter)
