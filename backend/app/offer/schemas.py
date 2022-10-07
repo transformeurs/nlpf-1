@@ -10,13 +10,13 @@ class OfferCreate(BaseModel):
 
 class Offer(BaseModel):
     id: int
-    title: str
-    description: str
-    created_at: datetime
-    author: str
-    contact: str
-    skills: List[constr(max_length=255)]
-    response_time: int
+    title: Union[str, None] = None
+    description: Union[str, None] = None
+    created_at: Union[datetime, None] = None
+    author: Union[str, None] = None
+    contact: Union[str, None] = None
+    skills: Union[List[constr(max_length=255)], None] = None
+    response_time: Union[int, None] = None
 
     class Config:
         orm_mode = True
