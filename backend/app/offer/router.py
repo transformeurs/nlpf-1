@@ -24,6 +24,10 @@ def convert_db_offer_to_offer(offer: models.Offer):
         contact = offer.company.email,
         created_at = offer.created_at,
         skills = offer.skills,
+        location=offer.location,
+        salary=offer.salary,
+        time=offer.time,
+        start_time=offer.start_time,
         response_time=0
     )
 

@@ -12,11 +12,8 @@ def get_offers(db: Session, skip: int = 0, limit: int = 100):
 
 def create_offer(db: Session, offer: schemas.OfferCreate, company_id: int):
     db_offer = models.Offer(
-        title = offer.title,
-        description = offer.description,
         company_id = company_id,
-        created_at = offer.created_at,
-        skills = offer.skills
+        **offer.dict() # put the rest of the attributes
     )
     db.add(db_offer)
 
