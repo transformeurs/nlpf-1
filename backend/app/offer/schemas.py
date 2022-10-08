@@ -10,7 +10,7 @@ class OfferCreate(BaseModel):
     location: str
     salary: Union[int, None] = None
     time: str
-    start_time: Union[int, None] = None
+    start_time: Union[str, None] = None
 
 class Offer(BaseModel):
     id: int
@@ -23,7 +23,7 @@ class Offer(BaseModel):
     location: Union[str, None] = None
     salary: Union[int, None] = None
     time: Union[str, None] = None
-    start_time: Union[int, None] = None
+    start_time: Union[str, None] = None
     response_time: Union[int, None] = None
 
     class Config:

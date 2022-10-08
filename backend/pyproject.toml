@@ -18,6 +18,7 @@ python-dotenv = "^0.21.0"
 pydantic = { extras = ["email"], version = "^1.10.2" }
 python-jose = { extras = ["cryptography"], version = "^3.3.0" }
 passlib = { extras = ["bcrypt"], version = "^1.7.4" }
+requests = "^2.28.1"
 
 
 [build-system]
