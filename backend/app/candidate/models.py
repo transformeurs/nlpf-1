@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from ..database import Base
 
@@ -11,3 +12,5 @@ class Candidate(Base):
     photo_url = Column(String, index=True)
     description = Column(String, index=True)
     pronouns = Column(String, index=True)
+
+    candidacies = relationship("Candidacy", back_populates="candidate")
