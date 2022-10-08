@@ -1,60 +1,47 @@
-from . import schemas, crud
-from fastapi import APIRouter, HTTPException, Depends, UploadFile
+from backend.app.candidate.schemas import Candidate
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from sqlalchemy.orm import Session
 
-from ..utils import password, s3
+from . import schemas, crud, models
 
-from ..dependencies import get_db, get_s3_resource
+from ..dependencies import get_db
 
 from ..account.util import get_current_account
 from ..account.models import Account
 
+from ..company.router import get_current_company
+from ..company.models import Company
+from backend.app import candidacies
+
 router = APIRouter()
 
-@router.get("/candidates", response_model=List[schemas.Candidate])
-async def read_candidates(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    candidates = crud.get_candidates(db, skip=skip, limit=limit)
-    return candidates
+#TODO be different if it's a company or candidate
 
-@router.get("/candidates/{candidate_id}", response_model=schemas.Candidate)
-async def read_candidates(candidate_id: int, db: Session = Depends(get_db)):
-    candidate = crud.get_candidate(db, candidate_id=candidate_id)
-    if candidate is None:
-        raise HTTPException(status_code=404, detail="Candidate not found")
-    return candidate
+# Get candidacy by id, need to be authenticated (company or candidate)
+@router.get("/candidacy/{candidacy_id}", response_model=schemas.Candidacy)
+async def get_offer_by_id(candidacy_id: int, db: Session = Depends(get_db), _: Account = Depends(get_current_account)):
+    candidacy = crud.get_candidacy(db, candidacy_id)
+    if candidacy is None:
+        raise HTTPException(status_code=404, detail="Offer not found")
+    return candidacy
 
-# Candidate Subscription -------------------------------------------------------
+#TODO not sure that get_current_account func get a candidate acc
 
-@router.post("/candidates", response_model=schemas.Candidate)
-async def create_candidate(candidate: schemas.CandidateCreate, db: Session = Depends(get_db)):
-    db_candidate = crud.get_candidate_by_email(db, email=candidate.email)
-    if db_candidate:
-        raise HTTPException(status_code=400, detail="Email already registered")
+# Post an offer, need to be authenticated as a Candidate
+@router.post("/candidacy", response_model=schemas.Offer)
+async def create_candidacy(offer: schemas.CandidacyCreate, db: Session = Depends(get_db), candidate: Candidate = Depends(get_current_account)):
+    db_candidacy = crud.create_candidacy(db, offer, candidate.id)
+    return db_candidacy
 
-    hashed_password = password.get_password_hash(candidate.password)
-    candidate.password = hashed_password
-    return crud.create_candidate(db=db, candidate=candidate)
+# Update the status of a given candidacy, need to be authenticated as the company's owner
+@router.patch("/candidacy", response_model=schemas.Candidacy, status_code=200)
+async def update_offer(candidacy: schemas.Candidacy, db: Session = Depends(get_db), company: Company = Depends(get_current_company)):
+    db_candidacy = crud.get_candidacy(db, candidacy.id)
+    if db_candidacy is None:
+        raise HTTPException(status_code=404, detail="Offer not found")
+    if db_candidacy.company_id != company.id:
+        raise HTTPException(status_code=403, detail="You are not the owner of this offer")
 
-
-@router.post("/candidates/uploadImage")
-async def create_upload_file(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
-    return s3.upload_file_to_bucket(s3_resource, 'candidate-images', file)
-
-# Candidate Login --------------------------------------------------------------
-
-# Given a connected account, return the candidate associated with it. If no
-# candidate is associated with it (e.g. a company) return an error.
-async def get_current_candidate(account: Account = Depends(get_current_account), db: Session = Depends(get_db)):
-    db_candidate = crud.get_candidate_by_email(db, email=account.email)
-
-    # In case the account is not a candidate (e.g. a company)
-    if not db_candidate:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    return db_candidate
-
-# Route that return the current connected candidate with its token
-@router.get("/candidates/me/", response_model=schemas.Candidate)
-async def get_me(candidate: schemas.Candidate = Depends(get_current_candidate)):
-    return candidate
+    candidacy = crud.update_status(db, candidacy)
+    return candidacy

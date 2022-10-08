@@ -1,34 +1,45 @@
+import datetime
 from sqlalchemy.orm import Session
 
 from . import models, schemas
 from ..account.models import Account
 
+def get_candidacy(db: Session, candidacy_id: int):
+    return db.query(models.Candidacy).filter(models.Candidacy.id == candidacy_id).first()
 
-def get_candidate(db: Session, candidate_id: int):
-    return db.query(models.Candidate).filter(models.Candidate.id == candidate_id).first()
+def get_candidacies_by_candidate(db: Session, candidate_id: int):
+    return db.query(models.Candidacy).filter(models.Candidate.id == candidate_id).first()
 
+def get_candidacies_by_company(db: Session, company_id: int):
+    return db.query(models.Candidacy).filter(models.Company.id == company_id).first()
 
-def get_candidate_by_email(db: Session, email: str):
-    return db.query(models.Candidate).filter(models.Candidate.email == email).first()
-
-
-def get_candidates(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Candidate).offset(skip).limit(limit).all()
-
-
-def create_candidate(db: Session, candidate: schemas.CandidateCreate):
-    db_account = Account(email=candidate.email, hashed_password=candidate.password)
-    db.add(db_account)
-
-    db_candidate = models.Candidate(
-        email=candidate.email,
-        name=candidate.name,
-        photo_url=candidate.photo_url,
-        description=candidate.description,
-        pronouns=candidate.pronouns
+def create_candidacy(db: Session, candidacy: schemas.CandidacyCreate):
+    db_candidacy = models.Candidacy(
+        #candidate_id
+        offer_id=candidacy.offer_id,
+        created_at=datetime.datetime.now(),
+        status = "Waiting",
+        cover_letter_url=candidacy.cover_letter_url,
+        resume_url=candidacy.resume_url,
+        custom_field=candidacy.custom_field
     )
-    db.add(db_candidate)
+    db.add(db_candidacy)
 
     db.commit()
-    db.refresh(db_candidate)
-    return db_candidate
+    db.refresh(db_candidacy)
+    return db_candidacy
+
+
+def update_status(db: Session, candidacy: schemas.Candidacy):
+    db_candidacy = db.query(models.Offer).filter(models.Candidacy.id == candidacy.id).one_or_none()
+    if not db_candidacy:
+        raise ValueError("Offer not found")
+
+    # Update values that need to be updated
+    for var, value in vars(candidacy).items():
+        setattr(db_candidacy, var, value) if value else None
+
+    db.add(db_candidacy)
+    db.commit()
+    db.refresh(db_candidacy)
+    return db_candidacy
