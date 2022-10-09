@@ -38,7 +38,7 @@ async def create_company(company: schemas.CompanyCreate, db: Session = Depends(g
 
 
 @router.post("/companies/uploadImage")
-async def create_upload_file(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+async def upload_profile_picture(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
     return s3.upload_file_to_bucket(s3_resource, 'company-images', file)
 
 # Company Login --------------------------------------------------------------

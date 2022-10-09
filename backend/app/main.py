@@ -11,6 +11,7 @@ from .candidate.router import router as CandidateRouter
 from .account.router import router as AccountRouter
 from .company.router import router as CompanyRouter
 from .offer.router import router as OfferRouter
+from .candidacies.router import router as CandidacyRouter
 
 
 Base.metadata.create_all(bind=engine)
@@ -36,3 +37,4 @@ app.include_router(CandidateRouter)
 app.include_router(AccountRouter)
 app.include_router(CompanyRouter)
 app.include_router(OfferRouter)
+app.include_router(CandidacyRouter)

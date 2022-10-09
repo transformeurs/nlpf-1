@@ -66,15 +66,35 @@ offers = [
     },
 ]
 
+candidacies = [
+    {
+        "candidate": "John Doe",
+        "candidacy": {
+            "offer_id": 1,
+            "cover_letter_url": "none",
+            "resume_url": "none",
+        }
+    },
+    {
+        "candidate": "Mary Jane",
+        "candidacy": {
+            "offer_id": 2,
+            "cover_letter_url": "none",
+            "resume_url": "none",
+        }
+    }
+]
+
 def upload_image(image_path, backend_path):
     with open(image_path, 'rb') as image:
         return requests.post(f'{BACKEND_URL}{backend_path}', files={'file': image}).json()
 
-def get_company_credentials(company_name):
-    for company in companies:
-        if company['name'] == company_name:
-            return company['email'], company['password']
-    raise ValueError("Company not found")
+# Get credentials for company or candidate
+def get_user_credentials(username, user_array):
+    for user in user_array:
+        if user['name'] == username:
+            return user['email'], user['password']
+    raise ValueError("User (candidate/company) not found")
 
 def login(email, password):
     response = requests.post(f'{BACKEND_URL}/account/login', json={'email': email, 'password': password})
@@ -111,9 +131,10 @@ def main():
             print(f"- {company['name']} creation failed: {response.text}")
 
     print("--- Creating offers ---")
+
     for offer in offers:
         # Login as company
-        access_token = login(*get_company_credentials(offer['company']))
+        access_token = login(*get_user_credentials(offer['company'], companies))
         headers = {'Authorization': f'Bearer {access_token}'}
         # Create offer
         response = requests.post(f'{BACKEND_URL}/offers', json=offer['offer'], headers=headers)
@@ -121,6 +142,19 @@ def main():
             print(f"- {offer['offer']['title']} by {offer['company']} created")
         else:
             print(f"- {offer['offer']['title']} creation failed: {response.text}")
+
+    print("--- Creating candidacies ---")
+
+    for candidacy in candidacies:
+        # Login as candidate
+        access_token = login(*get_user_credentials(candidacy['candidate'], candidates))
+        headers = {'Authorization': f'Bearer {access_token}'}
+        # Create candidacy
+        response = requests.post(f'{BACKEND_URL}/candidacies', json=candidacy['candidacy'], headers=headers)
+        if response.status_code == 200:
+            print(f"- Candidacy by {candidacy['candidate']} created")
+        else:
+            print(f"- Candidacy creation failed: {response.text}")
 
 if __name__ == "__main__":
     main()

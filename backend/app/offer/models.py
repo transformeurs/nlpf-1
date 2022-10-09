@@ -21,3 +21,4 @@ class Offer(Base):
     start_time = Column(String, index=True)
 
     company = relationship("Company", back_populates="offers")
+    candidacies = relationship("Candidacy", back_populates="offer")
