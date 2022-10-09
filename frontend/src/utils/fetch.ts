@@ -97,17 +97,27 @@ export function fetchApi(
 
 export function uploadFormImage(
     resource: string,
-    formData: FormData
+    formData: FormData,
+    token?: string | null
 ): Promise<FetchResponse | null> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
+    const init: RequestInit = {
+        method: FetchMethod.POST,
+        body: formData,
+        signal: controller.signal
+    };
+
+    if (token) {
+        init.headers = {
+            ...init.headers,
+            Authorization: `Bearer ${token}`
+        };
+    }
+
     return new Promise((resolve, reject) => {
-        fetchFun(resource, {
-            method: FetchMethod.POST,
-            body: formData,
-            signal: controller.signal
-        })
+        fetchFun(resource, init)
             .then(async (res) => {
                 clearTimeout(id);
                 resolve({

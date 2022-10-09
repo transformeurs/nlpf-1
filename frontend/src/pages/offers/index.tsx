@@ -3,7 +3,8 @@ import {
     CalendarIcon,
     EnvelopeIcon,
     TrashIcon,
-    BriefcaseIcon as BriefcaseIconSolid
+    BriefcaseIcon as BriefcaseIconSolid,
+    WrenchIcon
 } from "@heroicons/react/20/solid";
 import { CursorArrowRaysIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
@@ -17,6 +18,7 @@ import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import { fetchApi, FetchMethod } from "../../utils/fetch";
 import { NotificationStatus, useNotification } from "../../context/NotificationContext";
+import Link from "next/link";
 
 export interface OfferPanelProps {
     offerId: number;
@@ -28,7 +30,7 @@ export interface OfferPanelProps {
     contact: string;
     skills: string[];
     responseTime: number;
-    showDeleteButton: boolean;
+    isCompany: boolean;
 }
 
 const OfferPanel: FC<OfferPanelProps> = ({
@@ -41,11 +43,11 @@ const OfferPanel: FC<OfferPanelProps> = ({
     contact,
     skills,
     responseTime,
-    showDeleteButton = false
+    isCompany = false
 }) => {
     const router = useRouter();
     const { token } = useAuth({ requiredRole: AuthorizationRole.AnyUser });
-    const { mutate } = useOffer(showDeleteButton);
+    const { mutate } = useOffer(isCompany);
     const { addNotification } = useNotification();
     const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -53,7 +55,9 @@ const OfferPanel: FC<OfferPanelProps> = ({
         <div className="flex rounded bg-white p-6 shadow-lg">
             {/* Box content */}
             <div className="w-full">
-                <div className="text-xl font-semibold text-indigo-700">{title}</div>
+                <Link href={`/offers/${offerId}`}>
+                    <div className="text-xl font-semibold text-indigo-700 cursor-pointer">{title}</div>
+                </Link>
 
                 <div className="mt-0.5 flex items-center text-sm text-gray-600">
                     <div className="flex">
@@ -68,7 +72,8 @@ const OfferPanel: FC<OfferPanelProps> = ({
                 <div className="my-3">{description}</div>
                 <div className="flex items-center font-medium text-gray-600">
                     <BuildingOfficeIcon className="mr-1 h-5 w-5" />
-                    {author} <EnvelopeIcon className="mr-1 ml-5 h-5 w-5" />
+                    {author}
+                    <EnvelopeIcon className="mr-1 ml-5 h-5 w-5" />
                     {contact}
                 </div>
                 <div className="mt-4 flex space-x-2">
@@ -86,7 +91,7 @@ const OfferPanel: FC<OfferPanelProps> = ({
             {/* Right content */}
             <div className="flex flex-col">
                 <div className="space-y-1">
-                    {showDeleteButton && (
+                    {isCompany && (
                         <Button
                             type={ButtonType.DANGER}
                             size={ButtonSize.XL}
@@ -125,8 +130,8 @@ const OfferPanel: FC<OfferPanelProps> = ({
                     <Button
                         type={ButtonType.PRIMARY}
                         size={ButtonSize.XL}
-                        label={"Postuler"}
-                        rightIcon={CursorArrowRaysIcon}
+                        label={isCompany ? "Consulter" : "Postuler"}
+                        rightIcon={isCompany ? WrenchIcon : CursorArrowRaysIcon}
                         className="w-full"
                         onClick={() => router.push(`/offers/${offerId}`)}
                     />
@@ -190,7 +195,7 @@ const Home: NextPage = () => {
                             contact={offer.contact}
                             skills={offer.skills}
                             responseTime={offer.response_time}
-                            showDeleteButton={isCompany}
+                            isCompany={isCompany}
                         />
                     ))}
             </div>

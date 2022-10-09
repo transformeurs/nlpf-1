@@ -30,7 +30,7 @@ const Home: NextPage = () => {
                 )}
                 {isError && (
                     <div className="flex justify-center font-medium text-white">
-                        Une erreur est survenue lors du chargement des offres.
+                        Une erreur est survenue lors du chargement des candidatures.
                     </div>
                 )}
                 {candidacies &&

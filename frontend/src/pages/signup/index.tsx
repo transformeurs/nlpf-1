@@ -68,27 +68,19 @@ const SignUpForm: FC = () => {
         formData.append("file", hiddenFileInput.current!.files![0] as File);
         setButtonLoading(true);
         const uploadResponse = await uploadFormImage(`/${userRole}/uploadImage`, formData);
-        setButtonLoading(false);
 
-        if (!uploadResponse) {
+        if (!uploadResponse || uploadResponse.statusCode !== 200) {
             addNotification(
                 NotificationStatus.Error,
                 "Une erreur est survenue lors de l'envoi de votre photo."
             );
+            setButtonLoading(false);
             return;
-        } else if (uploadResponse.statusCode === 200) {
-            data.photo_url = uploadResponse.data.filename;
         } else {
-            addNotification(
-                NotificationStatus.Error,
-                "Une erreur est survenue lors de l'envoi de votre photo."
-            );
-            return;
+            data.photo_url = uploadResponse.data.filename;
         }
 
-        setButtonLoading(true);
         const response = await fetchApi(`/${userRole}/`, FetchMethod.POST, null, data);
-        setButtonLoading(false);
 
         if (!response) {
             addNotification(
@@ -102,6 +94,7 @@ const SignUpForm: FC = () => {
         } else {
             addNotification(NotificationStatus.Error, "Une erreur inconnue est survenue.");
         }
+        setButtonLoading(false);
     };
 
     return (
