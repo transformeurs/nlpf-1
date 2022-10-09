@@ -21,7 +21,8 @@ const Home: NextPage = () => {
             location: e.currentTarget.location.value,
             // skills: e.currentTarget.skills.value.split(",").map((skill) => skill.trim()),
             salary: e.currentTarget.salary.value,
-            time: e.currentTarget.time.value,
+            time: "stage",
+            skills: ["test"],
             description: e.currentTarget.description.value
         });
 
