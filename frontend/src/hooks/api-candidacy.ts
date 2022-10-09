@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { AuthorizationRole, useAuth } from "../context/AuthContext";
 
-export interface GetCandidacyResponse extends Array<GetCandidacyResponse> {
+export interface GetCandidacyResponse {
     id: number;
     offer_id: number;
     candidate_id: number;
@@ -18,18 +18,34 @@ export interface GetCandidacyResponse extends Array<GetCandidacyResponse> {
     offer_description: string;
 }
 
+export interface GetCandidaciesResponse extends Array<GetCandidacyResponse> { }
+
 export function useCandidacy(id?: number) {
     const { token } = useAuth({ requiredRole: AuthorizationRole.All });
 
-    const { data, error, mutate } = useSWR<GetCandidacyResponse>([
-        `/candidacies${id ? `/${id}` : ""}`,
-        token
-    ]);
+    if (id) {
+        const { data, error, mutate } = useSWR<GetCandidacyResponse>([
+            `/candidacies/${id}`,
+            token
+        ]);
 
-    return {
-        candidacies: data,
-        isLoading: !error && !data,
-        isError: error,
-        mutate
-    };
+        return {
+            candidacy: data,
+            isLoading: !error && !data,
+            isError: error,
+            mutate
+        };
+    } else {
+        const { data, error, mutate } = useSWR<GetCandidaciesResponse>([
+            `/candidacies`,
+            token
+        ]);
+
+        return {
+            candidacies: data,
+            isLoading: !error && !data,
+            isError: error,
+            mutate
+        };
+    }
 }

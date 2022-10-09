@@ -7,13 +7,18 @@ import {
     XCircleIcon
 } from "@heroicons/react/20/solid";
 import type { NextPage } from "next";
-import Button, { ButtonSize, ButtonType } from "../components/button";
-import Layout from "../components/layout";
-import LoadingIcon from "../components/loadingIcon";
-import { useCandidacy } from "../hooks/api-candidacy";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import Button, { ButtonSize, ButtonType } from "../../components/button";
+import Layout from "../../components/layout";
+import LoadingIcon from "../../components/loadingIcon";
+import { AuthorizationRole, useAuth } from "../../context/AuthContext";
+import { useCandidacy } from "../../hooks/api-candidacy";
 
 const Home: NextPage = () => {
     const { candidacies, isLoading, isError } = useCandidacy();
+    const auth = useAuth({ requiredRole: AuthorizationRole.AnyUser })
+    const router = useRouter();
 
     return (
         <Layout breadcrumbs={[{ label: "Candidatures", href: "/candidacies" }]}>
@@ -33,9 +38,11 @@ const Home: NextPage = () => {
                         <div key={candidacyIdx} className="flex rounded bg-white p-6 shadow-lg">
                             {/* Box content */}
                             <div className="w-full">
-                                <div className="text-xl font-semibold text-indigo-700">
-                                    {candidacy.offer_title}
-                                </div>
+                                <Link href={`/candidacies/${candidacy.id}`}>
+                                    <div className="text-xl font-semibold text-indigo-700 cursor-pointer">
+                                        {candidacy.offer_title}
+                                    </div>
+                                </Link>
 
                                 <div className="mt-0.5 flex items-center text-sm text-gray-600">
                                     <CalendarIcon className="mr-1 h-5 w-5" />
@@ -87,6 +94,9 @@ const Home: NextPage = () => {
                                                     : XCircleIcon
                                         }
                                         className="w-full"
+                                        onClick={() => {
+                                            router.push(`/candidacies/${candidacy.id}`);
+                                        }}
                                     />
                                 </div>
                                 <div>
