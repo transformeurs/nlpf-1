@@ -99,3 +99,15 @@ async def get_company_offers(company_id: int, db: Session = Depends(get_db), _: 
         offers.append(convert_db_offer_to_offer(db_offer))
 
     return offers
+
+# Get all offers of the authenticated company
+@router.get("/companies/myoffers/", response_model=List[schemas.Offer])
+async def get_my_offers(company: Company = Depends(get_current_company)):
+    offers = company.offers
+
+    # Transform the data to respect the schema
+    result = []
+    for offer in offers:
+        result.append(convert_db_offer_to_offer(offer))
+
+    return result

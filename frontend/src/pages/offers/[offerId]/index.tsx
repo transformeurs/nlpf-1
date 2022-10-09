@@ -83,8 +83,8 @@ const OfferPage: NextPage = () => {
                     <div className="text-2xl font-semibold text-indigo-700">Informations</div>
 
                     <div className="mt-4 space-y-2">
-                        {fields.map((field) => (
-                            <div className="mt-0.5 flex items-center text-gray-800">
+                        {fields.map((field, fieldIdx) => (
+                            <div key={fieldIdx} className="mt-0.5 flex items-center text-gray-800">
                                 <field.icon className="mr-1 h-5 w-5" />
                                 <div className="font-medium">{field.label}</div>
                                 <div className="flex-1 text-end text-gray-600">{field.value}</div>

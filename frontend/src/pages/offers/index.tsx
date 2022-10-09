@@ -1,34 +1,54 @@
-import { BuildingOfficeIcon, CalendarIcon, EnvelopeIcon } from "@heroicons/react/20/solid";
+import {
+    BuildingOfficeIcon,
+    CalendarIcon,
+    EnvelopeIcon,
+    TrashIcon,
+    BriefcaseIcon as BriefcaseIconSolid
+} from "@heroicons/react/20/solid";
 import { CursorArrowRaysIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
 import Button, { ButtonSize, ButtonType } from "../../components/button";
 import Layout from "../../components/layout";
 import LoadingIcon from "../../components/loadingIcon";
 import { useOffer } from "../../hooks/api-offer";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { AuthorizationRole, useAuth } from "../../context/AuthContext";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
+import { fetchApi, FetchMethod } from "../../utils/fetch";
+import { NotificationStatus, useNotification } from "../../context/NotificationContext";
 
 export interface OfferPanelProps {
+    offerId: number;
     title: string;
     createdAt: Date;
+    time: string;
     description: string;
     author: string;
     contact: string;
     skills: string[];
     responseTime: number;
+    showDeleteButton: boolean;
 }
 
 const OfferPanel: FC<OfferPanelProps> = ({
+    offerId,
     title,
     createdAt,
+    time,
     description,
     author,
     contact,
     skills,
-    responseTime
+    responseTime,
+    showDeleteButton = false
 }) => {
+    const router = useRouter();
+    const { token } = useAuth({ requiredRole: AuthorizationRole.Company });
+    const { mutate } = useOffer(true);
+    const { addNotification } = useNotification();
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
     return (
         <div className="flex rounded bg-white p-6 shadow-lg">
             {/* Box content */}
@@ -36,8 +56,14 @@ const OfferPanel: FC<OfferPanelProps> = ({
                 <div className="text-xl font-semibold text-indigo-700">{title}</div>
 
                 <div className="mt-0.5 flex items-center text-sm text-gray-600">
-                    <CalendarIcon className="mr-1 h-5 w-5" />
-                    {createdAt.toDateString()}
+                    <div className="flex">
+                        <CalendarIcon className="mr-1 h-5 w-5" />
+                        {createdAt.toDateString()}
+                    </div>
+                    <div className="ml-2 flex">
+                        <BriefcaseIconSolid className="mr-1 h-5 w-5" />
+                        {time}
+                    </div>
                 </div>
                 <div className="my-3">{description}</div>
                 <div className="flex items-center font-medium text-gray-600">
@@ -59,13 +85,50 @@ const OfferPanel: FC<OfferPanelProps> = ({
 
             {/* Right content */}
             <div className="flex flex-col">
-                <div>
+                <div className="space-y-1">
+                    {showDeleteButton && (
+                        <Button
+                            type={ButtonType.DANGER}
+                            size={ButtonSize.XL}
+                            label={"Supprimer"}
+                            rightIcon={TrashIcon}
+                            className="w-full"
+                            loading={deleteLoading}
+                            onClick={async () => {
+                                await setDeleteLoading(true);
+                                const response = await fetchApi(
+                                    `/offers/${offerId}`,
+                                    FetchMethod.DELETE,
+                                    token
+                                );
+                                await setDeleteLoading(false);
+                                if (!response) {
+                                    addNotification(
+                                        NotificationStatus.Error,
+                                        "Le serveur ne répond pas, vérifiez votre connexion internet."
+                                    );
+                                } else if (response.statusCode === 200) {
+                                    addNotification(
+                                        NotificationStatus.Success,
+                                        "L'offre a bien été supprimée."
+                                    );
+                                    await mutate();
+                                } else {
+                                    addNotification(
+                                        NotificationStatus.Error,
+                                        "Une erreur est survenue lors de la suppression de l'offre."
+                                    );
+                                }
+                            }}
+                        />
+                    )}
                     <Button
                         type={ButtonType.PRIMARY}
                         size={ButtonSize.XL}
                         label={"Postuler"}
                         rightIcon={CursorArrowRaysIcon}
                         className="w-full"
+                        onClick={() => router.push(`/offers/${offerId}`)}
                     />
                 </div>
                 <div>
@@ -84,7 +147,9 @@ const Home: NextPage = () => {
         redirectUrl: "/"
     });
     const router = useRouter();
-    const { offers, isLoading, isError } = useOffer();
+    const { offers, isLoading, isError } = useOffer(true);
+
+    const isCompany = hasPermission(AuthorizationRole.Company);
 
     return (
         <Layout breadcrumbs={[{ label: "Offres", href: "/offers" }]}>
@@ -99,7 +164,7 @@ const Home: NextPage = () => {
                         Une erreur est survenue lors du chargement des offres.
                     </div>
                 )}
-                {hasPermission(AuthorizationRole.Company) && (
+                {isCompany && (
                     <div className="flex flex-col items-center justify-center rounded bg-white p-6 shadow-lg">
                         <div className="mb-2 flex items-center font-medium text-gray-800">
                             <BriefcaseIcon className="mr-1 h-8 w-8" /> Vous souhaitez faire
@@ -117,13 +182,16 @@ const Home: NextPage = () => {
                     offers.map((offer, offerIdx) => (
                         <OfferPanel
                             key={offerIdx}
+                            offerId={offer.id}
                             title={offer.title}
                             createdAt={new Date(offer.created_at)}
+                            time={offer.time}
                             description={offer.description}
                             author={offer.author}
                             contact={offer.contact}
                             skills={offer.skills}
                             responseTime={offer.response_time}
+                            showDeleteButton={isCompany}
                         />
                     ))}
             </div>

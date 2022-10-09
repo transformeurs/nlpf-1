@@ -16,11 +16,11 @@ export interface GetOfferResponse extends Array<GetOfferResponse> {
     title: string;
 }
 
-export function useOffer(id?: number) {
+export function useOffer(ownOffer?: boolean, id?: number) {
     const { token } = useAuth({ requiredRole: AuthorizationRole.All });
 
     const { data, error, mutate } = useSWR<GetOfferResponse>([
-        `/offers${id ? `?id=${id}` : ""}`,
+        ownOffer ? "/companies/myoffers/" : `/offers${id ? `/${id}` : ""}`,
         token
     ]);
 
