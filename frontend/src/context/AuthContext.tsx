@@ -11,13 +11,14 @@ type User = {
     avatarUrl: string;
 };
 
-const AuthContext = React.createContext<
+export const AuthContext = React.createContext<
     | {
-        user: User | null;
-        setToken: (token: string) => void;
-        hasPermission: (permission: AuthorizationRole) => boolean;
-        disconnect: () => void;
-    }
+          user: User | null;
+          token: string | null;
+          setToken: (token: string) => void;
+          hasPermission: (permission: AuthorizationRole) => boolean;
+          disconnect: () => void;
+      }
     | undefined
 >(undefined);
 
@@ -27,24 +28,30 @@ interface AuthProviderProps {
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<null | User>(null);
+    const [token, setToken] = useState<string | null>(null);
     const { addNotification } = useNotification();
 
-    const setToken = (token: string) => {
-        localStorage.setItem("token", token);
-        const newUser = jwt_decode(token) as User;
-        setUser(newUser);
-        addNotification(NotificationStatus.Success, `Connecté en tant que ${newUser.name}`);
-    };
+    useEffect(() => {
+        if (!token) {
+            setUser(null);
+        } else {
+            localStorage.setItem("token", token);
+            const newUser = jwt_decode(token) as User;
+            setUser(newUser);
+            addNotification(NotificationStatus.Success, `Connecté en tant que ${newUser.name}`);
+        }
+    }, [token]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (token) setUser(jwt_decode(token));
+        if (token) setToken(token);
     }, []);
 
     return (
         <AuthContext.Provider
             value={{
                 user,
+                token,
                 setToken,
                 hasPermission: (role: AuthorizationRole) => {
                     switch (role) {

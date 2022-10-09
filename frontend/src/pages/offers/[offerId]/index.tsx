@@ -1,20 +1,25 @@
 import {
+    BanknotesIcon,
     BuildingOfficeIcon,
     CalendarIcon,
-    EnvelopeIcon,
-    HomeIcon,
-    BanknotesIcon,
+    ChevronDoubleRightIcon,
     ClockIcon,
-    FlagIcon
+    EnvelopeIcon,
+    FlagIcon,
+    HomeIcon
 } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import Button, { ButtonSize, ButtonType } from "../../../components/button";
 import Layout from "../../../components/layout";
+import Input, { InputType } from "../../../components/input";
+import { useState } from "react";
+import FileInput from "../../../components/file-input";
 
 const OfferPage: NextPage = () => {
     const router = useRouter();
     const offerId = router.query.offerId;
+    const [selectedAnswers, setSelectedAnswers] = useState<{ [id: number]: number }>({});
 
     const offer = {
         createdAt: new Date(),
@@ -32,6 +37,10 @@ const OfferPage: NextPage = () => {
         questions: [
             {
                 question: "Quel temps fait-il dehors ?",
+                answers: ["réponse possible 1", "réponse possible 2", "réponse possible 3"]
+            },
+            {
+                question: "Ceci est une seconde question !",
                 answers: ["réponse possible 1", "réponse possible 2", "réponse possible 3"]
             }
         ]
@@ -62,12 +71,15 @@ const OfferPage: NextPage = () => {
                 { label: `Offre ${offer.title}`, href: `/offers/${offerId}` }
             ]}
         >
-            <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2 rounded-lg bg-white p-8 shadow">
+            <div className="grid grid-cols-6 gap-4">
+                {/* Offer title and description */}
+                <div className="col-span-4 rounded-lg bg-white p-8 shadow">
                     <div className="text-2xl font-semibold text-indigo-700">{offer.title}</div>
                     <div className="my-3">{offer.description}</div>
                 </div>
-                <div className="col-span-1 rounded-lg bg-white p-8 shadow">
+
+                {/* Offer fields */}
+                <div className="col-span-2 rounded-lg bg-white p-8 shadow">
                     <div className="text-2xl font-semibold text-indigo-700">Informations</div>
 
                     <div className="mt-4 space-y-2">
@@ -90,50 +102,85 @@ const OfferPage: NextPage = () => {
                         ))}
                     </div>
                 </div>
-                <div className="col-span-3 grid grid-cols-4 gap-4">
-                    <div className="col-span-2 col-start-2 space-y-2 rounded-lg bg-white p-8 shadow">
-                        <div className="text-2xl font-semibold text-indigo-700">Candidater</div>
 
-                        <div className="divide-y divide-gray-400">
-                            <div className="text-lg font-medium text-gray-800">Documents</div>
-                            <div>
-                                <div className="grid grid-cols-2">
-                                    <div className="font-medium text-gray-700">C.V.</div>
-                                    <div></div>
+                {/* Offer form */}
+                <div className="col-span-4 col-start-2 rounded-lg bg-white p-8 shadow">
+                    <div className="text-2xl font-semibold text-indigo-700">Candidater</div>
+
+                    <form className="mt-8 space-y-12">
+                        <div className="space-y-6">
+                            <div className="border-b border-gray-200 pb-2">
+                                <div className="text-lg font-medium text-gray-800">Documents</div>
+                                <div className="text-sm text-gray-600">
+                                    Téléchargez votre CV et votre lettre de motivation pour postuler
+                                    à l'offre.
                                 </div>
-                                <div className="grid grid-cols-2">
-                                    <div className="font-medium text-gray-700">
-                                        Lettre de motivation
-                                        <div className="mt-3">
-                                            <Button
-                                                type={ButtonType.SECONDARY}
-                                                size={ButtonSize.MD}
-                                                label={"Choisir un fichier"}
-                                            />
-                                            <span className="text-s ml-3 text-gray-600">
-                                                {/* ref={fileName} */}
-                                                Aucun fichier choisi
-                                            </span>
-                                        </div>
-                                        {/* Hidden file input, handled by the Button component */}
-                                        <input
-                                            type="file"
-                                            id="photo"
-                                            name="photo"
-                                            // ref={hiddenFileInput}
-                                            style={{ display: "none" }}
-                                            onChange={() => {}}
-                                        />
-                                    </div>
+                            </div>
+                            <div className="grid grid-cols-4">
+                                <div className="col-span-1 flex items-center font-medium text-gray-700">
+                                    C.V.
                                 </div>
+                                <FileInput className="col-span-3" />
+                            </div>
+                            <div className="grid grid-cols-4">
+                                <div className="col-span-1 flex items-center font-medium text-gray-700">
+                                    Lettre de motivation
+                                </div>
+                                <FileInput className="col-span-3" />
                             </div>
                         </div>
 
-                        <div className="divide-y divide-gray-400">
-                            <div className="text-lg font-medium text-gray-800">Questionnaire</div>
-                            <div>dassad</div>
+                        <div className="space-y-6">
+                            <div className="border-b border-gray-200 pb-2">
+                                <div className="text-lg font-medium text-gray-800">
+                                    Questionnaire
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                    Répondez au questionnaire afin de donner une idée au recruteur
+                                    de votre niveau d'expertise.
+                                </div>
+                            </div>
+                            {offer.questions.map((question, questionIdx) => (
+                                <div key={questionIdx}>
+                                    <div className="flex items-center font-medium text-gray-700">
+                                        <ChevronDoubleRightIcon className="mr-1 h-5 w-5" />
+                                        {question.question}
+                                    </div>
+                                    <div className="mt-1 space-x-2">
+                                        {question.answers.map((answer, answerIdx) => (
+                                            <Button
+                                                key={answerIdx}
+                                                type={
+                                                    selectedAnswers[questionIdx] === answerIdx
+                                                        ? ButtonType.PRIMARY
+                                                        : ButtonType.SECONDARY
+                                                }
+                                                size={ButtonSize.MD}
+                                                label={answer}
+                                                onClick={() =>
+                                                    setSelectedAnswers({
+                                                        ...selectedAnswers,
+                                                        [questionIdx]: answerIdx
+                                                    })
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+
+                        <div className="flex items-center justify-end">
+                            <div className="mr-2 text-gray-700">
+                                Prêt à rejoindre l'aventure ? ✨
+                            </div>
+                            <Button
+                                type={ButtonType.PRIMARY}
+                                size={ButtonSize.LG}
+                                label={"Envoyer"}
+                            />
+                        </div>
+                    </form>
                 </div>
             </div>
         </Layout>

@@ -12,7 +12,7 @@ import { fetchApi, FetchMethod } from "../utils/fetch";
 const LoginForm: FC = () => {
     const { setToken } = useAuth({
         requiredRole: AuthorizationRole.Visitor,
-        redirectUrl: "/afterLogin",
+        redirectUrl: "/afterLogin"
     });
     const { addNotification } = useNotification();
     const [buttonLoading, setButtonLoading] = useState(false);
@@ -23,7 +23,7 @@ const LoginForm: FC = () => {
         event.preventDefault();
 
         setButtonLoading(true);
-        const response = await fetchApi("/account/login", FetchMethod.POST, {
+        const response = await fetchApi("/account/login", FetchMethod.POST, null, {
             email: event.currentTarget.email.value,
             password: event.currentTarget.password.value
         });
@@ -91,9 +91,13 @@ const LoginForm: FC = () => {
                             />
                         </div>
 
-                        <p className="text-xs leading-5 text-gray-500 text-center">
+                        <p className="text-center text-xs leading-5 text-gray-500">
                             Pas de compte ?{" "}
-                            <Link href="/signup"><span className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500">Inscrivez-vous !</span></Link>
+                            <Link href="/signup">
+                                <span className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500">
+                                    Inscrivez-vous !
+                                </span>
+                            </Link>
                         </p>
                     </form>
                 </div>

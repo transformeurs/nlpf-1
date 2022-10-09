@@ -1,4 +1,10 @@
-import { UserIcon, KeyIcon, DocumentTextIcon, EnvelopeIcon, BuildingOfficeIcon } from "@heroicons/react/20/solid";
+import {
+    UserIcon,
+    KeyIcon,
+    DocumentTextIcon,
+    EnvelopeIcon,
+    BuildingOfficeIcon
+} from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -54,8 +60,8 @@ const SignUpForm: FC = () => {
             email: event.currentTarget.email.value,
             password: event.currentTarget.password.value,
             description: event.currentTarget.description.value,
-            pronouns: userRole === "candidates" ? event.currentTarget.pronouns.value : null,
-        }
+            pronouns: userRole === "candidates" ? event.currentTarget.pronouns.value : null
+        };
 
         // First we submit the photo to the API through a FormData object
         const formData = new FormData();
@@ -65,17 +71,23 @@ const SignUpForm: FC = () => {
         setButtonLoading(false);
 
         if (!uploadResponse) {
-            addNotification(NotificationStatus.Error, "Une erreur est survenue lors de l'envoi de votre photo.");
+            addNotification(
+                NotificationStatus.Error,
+                "Une erreur est survenue lors de l'envoi de votre photo."
+            );
             return;
         } else if (uploadResponse.statusCode === 200) {
             data.photo_url = uploadResponse.data.filename;
         } else {
-            addNotification(NotificationStatus.Error, "Une erreur est survenue lors de l'envoi de votre photo.");
+            addNotification(
+                NotificationStatus.Error,
+                "Une erreur est survenue lors de l'envoi de votre photo."
+            );
             return;
         }
 
         setButtonLoading(true);
-        const response = await fetchApi(`/${userRole}/`, FetchMethod.POST, data);
+        const response = await fetchApi(`/${userRole}/`, FetchMethod.POST, null, data);
         setButtonLoading(false);
 
         if (!response) {
@@ -94,18 +106,34 @@ const SignUpForm: FC = () => {
 
     return (
         <div className="flex justify-center">
-            <div className="w-full lg:w-1/2 rounded-lg bg-white shadow">
+            <div className="w-full rounded-lg bg-white shadow lg:w-1/2">
                 <div className="px-4 py-8 sm:px-10">
                     <div className="text-center text-lg font-semibold">Inscription</div>
                     <div className="mt-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid justify-center items-center">
-                                <div className="text-center italic mb-2">Qui êtes-vous ?</div>
+                            <div className="grid items-center justify-center">
+                                <div className="mb-2 text-center italic">Qui êtes-vous ?</div>
                                 <div>
-                                    <input type="radio" value="candidates" id="candidateRole" onChange={handleUserRoleChange} checked={userRole === "candidates"} />
-                                    <label htmlFor="candidateRole" className="ml-2 mr-5">Candidat·e</label>
-                                    <input type="radio" value="companies" id="companyRole" onChange={handleUserRoleChange} checked={userRole === "companies"} />
-                                    <label htmlFor="companyRole" className="ml-2">Entreprise</label>
+                                    <input
+                                        type="radio"
+                                        value="candidates"
+                                        id="candidateRole"
+                                        onChange={handleUserRoleChange}
+                                        checked={userRole === "candidates"}
+                                    />
+                                    <label htmlFor="candidateRole" className="ml-2 mr-5">
+                                        Candidat·e
+                                    </label>
+                                    <input
+                                        type="radio"
+                                        value="companies"
+                                        id="companyRole"
+                                        onChange={handleUserRoleChange}
+                                        checked={userRole === "companies"}
+                                    />
+                                    <label htmlFor="companyRole" className="ml-2">
+                                        Entreprise
+                                    </label>
                                 </div>
                             </div>
 
@@ -118,8 +146,14 @@ const SignUpForm: FC = () => {
                                     name={"username"}
                                     id={"username"}
                                     autoComplete={"name"}
-                                    placeholder={userRole === "candidates" ? "Votre nom" : "Nom de l'entreprise"}
-                                    leftIcon={userRole === "candidates" ? UserIcon : BuildingOfficeIcon}
+                                    placeholder={
+                                        userRole === "candidates"
+                                            ? "Votre nom"
+                                            : "Nom de l'entreprise"
+                                    }
+                                    leftIcon={
+                                        userRole === "candidates" ? UserIcon : BuildingOfficeIcon
+                                    }
                                     required
                                 />
                             </div>
@@ -176,7 +210,9 @@ const SignUpForm: FC = () => {
                                         id="description"
                                         rows={5}
                                         placeholder={
-                                            userRole === "candidates" ? "Décrivez vous en quelques mots..." : "Décrivez votre entreprise..."
+                                            userRole === "candidates"
+                                                ? "Décrivez vous en quelques mots..."
+                                                : "Décrivez votre entreprise..."
                                         }
                                     />
                                 </div>
@@ -184,14 +220,14 @@ const SignUpForm: FC = () => {
 
                             {userRole == "candidates" && (
                                 <div>
-                                    <label htmlFor="pronouns">
-                                        Vos pronoms
-                                    </label>
+                                    <label htmlFor="pronouns">Vos pronoms</label>
                                     <Input
                                         type={InputType.TEXT}
                                         name={"pronouns"}
                                         id={"pronouns"}
-                                        placeholder={"il/lui, elle/elle, ils/leur, elles/leur, etc..."}
+                                        placeholder={
+                                            "il/lui, elle/elle, ils/leur, elles/leur, etc..."
+                                        }
                                     />
                                 </div>
                             )}
@@ -205,10 +241,19 @@ const SignUpForm: FC = () => {
                                         label={"Choisir une photo"}
                                         onClick={handleFileClick}
                                     />
-                                    <span ref={fileName} className="ml-3 text-s text-gray-600">Aucun fichier choisi</span>
+                                    <span ref={fileName} className="text-s ml-3 text-gray-600">
+                                        Aucun fichier choisi
+                                    </span>
                                 </div>
                                 {/* Hidden file input, handled by the Button component */}
-                                <input type="file" id="photo" name="photo" ref={hiddenFileInput} style={{ display: 'none' }} onChange={handleFileChange} />
+                                <input
+                                    type="file"
+                                    id="photo"
+                                    name="photo"
+                                    ref={hiddenFileInput}
+                                    style={{ display: "none" }}
+                                    onChange={handleFileChange}
+                                />
                             </div>
 
                             <div>
