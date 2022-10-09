@@ -2,25 +2,27 @@ import useSWR from "swr";
 import { AuthorizationRole, useAuth } from "../context/AuthContext";
 
 export interface GetCandidacyResponse extends Array<GetCandidacyResponse> {
-    author: string;
-    contact: string;
-    created_at: string;
-    description: string;
     id: number;
-    location: string;
-    response_time: number;
-    salary: number;
+    offer_id: number;
+    candidate_id: number;
+    candidate_name: string;
+    candidate_email: string;
+    company_name: string;
+    company_email: string;
+    created_at: string;
     skills: string[];
-    start_time: string;
-    time: string;
-    title: string;
+    status: string;
+    resume_url: string;
+    cover_letter_url: string;
+    offer_title: string;
+    offer_description: string;
 }
 
 export function useCandidacy(id?: number) {
     const { token } = useAuth({ requiredRole: AuthorizationRole.All });
 
     const { data, error, mutate } = useSWR<GetCandidacyResponse>([
-        `/candidacies${id ? `?id=${id}` : ""}`,
+        `/candidacies${id ? `/${id}` : ""}`,
         token
     ]);
 
