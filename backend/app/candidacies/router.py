@@ -133,10 +133,10 @@ async def get_offer_candidacies(offer_id: int, db: Session = Depends(get_db), co
 
 # Upload Resume to S3 bucket
 @router.post("/candidacies/upload_resume")
-async def upload_resume(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+async def upload_resume(file: UploadFile, s3_resource: Session = Depends(get_s3_resource), _: Account = Depends(get_current_account)):
     return s3.upload_file_to_bucket(s3_resource, 'resumes', file)
 
 # Upload Cover Letter to S3 bucket
 @router.post("/candidacies/upload_cover_letter")
-async def upload_cover_letter(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+async def upload_cover_letter(file: UploadFile, s3_resource: Session = Depends(get_s3_resource), _: Account = Depends(get_current_account)):
     return s3.upload_file_to_bucket(s3_resource, 'cover-letters', file)
