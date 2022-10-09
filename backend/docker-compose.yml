@@ -40,10 +40,18 @@ services:
       - |
         sleep 2
         mc alias set myminio http://s3:9000 jobboard jobboard
+
         mc mb myminio/candidate-images --ignore-existing
         mc anonymous set download myminio/candidate-images
+
         mc mb myminio/company-images --ignore-existing
         mc anonymous set download myminio/company-images
+
+        mc mb myminio/resumes --ignore-existing
+        mc anonymous set download myminio/resumes
+
+        mc mb myminio/cover-letters --ignore-existing
+        mc anonymous set download myminio/cover-letters
 
 volumes:
   nlpf_postgres_data:

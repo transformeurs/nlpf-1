@@ -22,7 +22,7 @@ async def get_current_account(token: str = Depends(oauth2_scheme), db: Session =
     )
     try:
         payload = jwt.decode_access_token(token)
-        email: str = payload.get("sub")
+        email: str = payload.get("email")
         if email is None:
             raise credentials_exception
     except JWTError:

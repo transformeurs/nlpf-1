@@ -17,10 +17,9 @@ interface LayoutProps {
 }
 
 const navigation = [
-    { name: "Sessions", href: "/sessions" },
-    { name: "Quizzes", href: "/quizzes" },
-    { name: "Settings", href: "/settings" },
-    { name: "Help", href: "/help" }
+    { name: "Accueil", href: "/" },
+    { name: "Offres", href: "/offers" },
+    { name: "Candidatures", href: "/candidacies" }
 ];
 
 const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
@@ -30,7 +29,7 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
     const userNavigation = [
         {
             name: "Déconnexion",
-            fun: () => disconnect(),
+            fun: () => disconnect()
         }
     ];
 
@@ -43,7 +42,7 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                             <div className="relative flex items-center justify-center py-5 lg:justify-between">
                                 {/* Logo */}
                                 <Link href="/">
-                                    <div className="cursor-pointer absolute left-0 flex flex-shrink-0 select-none items-center text-lg font-semibold hover:opacity-75 transition duration-400 ease-in-out lg:static">
+                                    <div className="duration-400 absolute left-0 flex flex-shrink-0 cursor-pointer select-none items-center text-lg font-semibold transition ease-in-out hover:opacity-75 lg:static">
                                         <BriefcaseIcon className="mr-2 h-8 w-8 text-indigo-300" />
                                         <span className="text-white">Job</span>
                                         <span className="text-indigo-300">Board</span>
@@ -57,7 +56,7 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                             <div
                                                 className={classNames(
                                                     router.pathname === item.href
-                                                        ? "bg-gray-900 text-white"
+                                                        ? "text-white underline underline-offset-4"
                                                         : "text-gray-300 hover:bg-indigo-600 hover:text-white",
                                                     "cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
                                                 )}
@@ -68,7 +67,7 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                     ))}
                                     {!user && (
                                         <Link href="/signup">
-                                            <div className="cursor-pointer text-gray-300 border border-gray-300 hover:bg-indigo-600 hover:text-white rounded-md px-3 py-2 text-sm font-medium">
+                                            <div className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-indigo-600 hover:text-white">
                                                 S'inscrire
                                             </div>
                                         </Link>
@@ -227,13 +226,11 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                                 </div>
                                                 <div className="mt-3 space-y-1 px-2">
                                                     {navigation.map((item, itemIdx) => (
-                                                        <a
-                                                            key={itemIdx}
-                                                            href="#"
-                                                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                                                        >
-                                                            {item.name}
-                                                        </a>
+                                                        <Link key={itemIdx} href={item.href}>
+                                                            <button className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800">
+                                                                {item.name}
+                                                            </button>
+                                                        </Link>
                                                     ))}
                                                 </div>
                                             </div>
@@ -287,9 +284,7 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                                 <div className="pt-2 pb-2">
                                                     <div className="space-y-1 px-2">
                                                         <Link href="/signup">
-                                                            <div
-                                                                className="cursor-pointer block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                                                            >
+                                                            <div className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800">
                                                                 S'inscrire
                                                             </div>
                                                         </Link>
