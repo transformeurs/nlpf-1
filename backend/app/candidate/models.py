@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
+from ..candidacies.models import Candidacy # Import needed to make Candidacy available in the Candidate model
+
 from ..database import Base
 
 class Candidate(Base):
