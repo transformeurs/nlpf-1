@@ -71,23 +71,23 @@ candidacies = [
         "candidate": "John Doe",
         "candidacy": {
             "offer_id": 1,
-            "cover_letter_url": "none",
-            "resume_url": "none",
+            "cover_letter_url": "./cover_letter.pdf",
+            "resume_url": "./resume.pdf",
         }
     },
     {
         "candidate": "Mary Jane",
         "candidacy": {
             "offer_id": 2,
-            "cover_letter_url": "none",
-            "resume_url": "none",
+            "cover_letter_url": "./cover_letter.pdf",
+            "resume_url": "./resume.pdf",
         }
     }
 ]
 
-def upload_image(image_path, backend_path):
+def upload_image(image_path, backend_path, headers=None):
     with open(image_path, 'rb') as image:
-        return requests.post(f'{BACKEND_URL}{backend_path}', files={'file': image}).json()
+        return requests.post(f'{BACKEND_URL}{backend_path}', files={'file': image}, headers=headers).json()
 
 # Get credentials for company or candidate
 def get_user_credentials(username, user_array):
@@ -150,6 +150,8 @@ def main():
         access_token = login(*get_user_credentials(candidacy['candidate'], candidates))
         headers = {'Authorization': f'Bearer {access_token}'}
         # Create candidacy
+        candidacy['candidacy']['resume_url'] = upload_image(candidacy['candidacy']['resume_url'], '/candidacies/upload_resume', headers)['filename']
+        candidacy['candidacy']['cover_letter_url'] = upload_image(candidacy['candidacy']['cover_letter_url'], '/candidacies/upload_cover_letter', headers)['filename']
         response = requests.post(f'{BACKEND_URL}/candidacies', json=candidacy['candidacy'], headers=headers)
         if response.status_code == 200:
             print(f"- Candidacy by {candidacy['candidate']} created")

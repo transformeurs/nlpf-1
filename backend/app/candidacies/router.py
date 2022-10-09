@@ -16,6 +16,7 @@ from ..company.models import Company
 from ..candidate.router import get_current_candidate
 from ..candidate.models import Candidate
 from ..offer.crud import get_offer
+from app import candidacies
 
 router = APIRouter()
 
@@ -34,8 +35,41 @@ def convert_to_schema(candidacy: models.Candidacy) -> schemas.Candidacy:
         status=candidacy.status,
         resume_url=candidacy.resume_url,
         cover_letter_url=candidacy.cover_letter_url,
+        offer_title=candidacy.offer.title,
         offer_description=candidacy.offer.description
     )
+
+# Get all candidacies, need to be authenticated (company or candidate)
+# If company, return the candidacies the company received
+# If candidate, return the candidacies the candidate sent
+@router.get("/candidacies", response_model=List[schemas.Candidacy])
+async def get_my_candidacies(db: Session = Depends(get_db), account: Account = Depends(get_current_account)):
+    candidate = None
+    company = None
+    try:
+        candidate = await get_current_candidate(account, db)
+    except HTTPException:
+        company = await get_current_company(account, db)
+
+    if not candidate and not company:
+        raise HTTPException(status_code=401, detail="You are not authenticated")
+
+    result = []
+    if company:
+        offers = company.offers
+        result = []
+        for offer in offers:
+            for candidacy in offer.candidacies:
+                result.append(convert_to_schema(candidacy))
+        return result
+    if candidate:
+        candidacies = candidate.candidacies
+        result = []
+        for candidacy in candidacies:
+            result.append(convert_to_schema(candidacy))
+        return result
+
+    return result
 
 # Get candidacy by id, need to be authenticated (company or candidate)
 # If company, need to be the company that created the offer
@@ -97,31 +131,12 @@ async def get_offer_candidacies(offer_id: int, db: Session = Depends(get_db), co
         result.append(convert_to_schema(candidacy))
     return result
 
-# Get all candidacies associated to a candidate, need to be authenticated as the candidate
-@router.get("/candidates/candidacies/", response_model=List[schemas.Candidacy])
-async def get_candidate_candidacies(candidate: Candidate = Depends(get_current_candidate)):
-    candidacies = candidate.candidacies
-    result = []
-    for candidacy in candidacies:
-        result.append(convert_to_schema(candidacy))
-    return result
-
-# Get all candidacies associated to a company, need to be authenticated as a company
-@router.get("/companies/candidacies/", response_model=List[schemas.Candidacy])
-async def get_company_candidacies(company: Company = Depends(get_current_company)):
-    offers = company.offers
-    result = []
-    for offer in offers:
-        for candidacy in offer.candidacies:
-            result.append(convert_to_schema(candidacy))
-    return result
-
 # Upload Resume to S3 bucket
 @router.post("/candidacies/upload_resume")
-async def upload_resume(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+async def upload_resume(file: UploadFile, s3_resource: Session = Depends(get_s3_resource), _: Account = Depends(get_current_account)):
     return s3.upload_file_to_bucket(s3_resource, 'resumes', file)
 
 # Upload Cover Letter to S3 bucket
 @router.post("/candidacies/upload_cover_letter")
-async def upload_cover_letter(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+async def upload_cover_letter(file: UploadFile, s3_resource: Session = Depends(get_s3_resource), _: Account = Depends(get_current_account)):
     return s3.upload_file_to_bucket(s3_resource, 'cover-letters', file)

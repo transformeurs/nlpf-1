@@ -35,6 +35,7 @@ class Candidacy(BaseModel):
     resume_url: str
     cover_letter_url: Union[str, None] = None
 
+    offer_title: str
     offer_description: Union[str, None] = None
 
     class Config:
