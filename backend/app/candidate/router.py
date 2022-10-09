@@ -38,7 +38,7 @@ async def create_candidate(candidate: schemas.CandidateCreate, db: Session = Dep
 
 
 @router.post("/candidates/uploadImage")
-async def create_upload_file(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+async def upload_profile_picture(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
     return s3.upload_file_to_bucket(s3_resource, 'candidate-images', file)
 
 # Candidate Login --------------------------------------------------------------

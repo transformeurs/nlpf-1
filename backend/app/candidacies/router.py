@@ -1,10 +1,12 @@
 from typing import List
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile
 from sqlalchemy.orm import Session
+import sqlalchemy
 
 from . import schemas, crud, models
 
-from ..dependencies import get_db
+from ..dependencies import get_db, get_s3_resource
+from ..utils import s3
 
 from ..account.util import get_current_account
 from ..account.models import Account
@@ -61,7 +63,11 @@ async def get_candidacy_by_id(candidacy_id: int, db: Session = Depends(get_db), 
 # Create a candidacy, need to be authenticated as a Candidate
 @router.post("/candidacies", response_model=schemas.Candidacy)
 async def create_candidacy(candidacy: schemas.CandidacyCreate, db: Session = Depends(get_db), candidate: Candidate = Depends(get_current_candidate)):
-    db_candidacy = crud.create_candidacy(db, candidacy, candidate.id)
+    try:
+        db_candidacy = crud.create_candidacy(db, candidacy, candidate.id)
+    except sqlalchemy.exc.IntegrityError:
+        raise HTTPException(status_code=400, detail="Cannot create a candidacy for the same offer twice")
+
     return convert_to_schema(db_candidacy)
 
 # Update the status of a given candidacy, need to be authenticated as company that can manager the offer
@@ -99,3 +105,23 @@ async def get_candidate_candidacies(candidate: Candidate = Depends(get_current_c
     for candidacy in candidacies:
         result.append(convert_to_schema(candidacy))
     return result
+
+# Get all candidacies associated to a company, need to be authenticated as a company
+@router.get("/companies/candidacies/", response_model=List[schemas.Candidacy])
+async def get_company_candidacies(company: Company = Depends(get_current_company)):
+    offers = company.offers
+    result = []
+    for offer in offers:
+        for candidacy in offer.candidacies:
+            result.append(convert_to_schema(candidacy))
+    return result
+
+# Upload Resume to S3 bucket
+@router.post("/candidacies/upload_resume")
+async def upload_resume(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+    return s3.upload_file_to_bucket(s3_resource, 'resumes', file)
+
+# Upload Cover Letter to S3 bucket
+@router.post("/candidacies/upload_cover_letter")
+async def upload_cover_letter(file: UploadFile, s3_resource: Session = Depends(get_s3_resource)):
+    return s3.upload_file_to_bucket(s3_resource, 'cover-letters', file)
