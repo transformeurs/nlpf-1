@@ -6,6 +6,7 @@ import Button, { ButtonSize, ButtonType } from "../../components/button";
 import {
     BanknotesIcon,
     BriefcaseIcon,
+    FlagIcon,
     GlobeEuropeAfricaIcon,
     TagIcon
 } from "@heroicons/react/20/solid";
@@ -35,6 +36,7 @@ const Home: NextPage = () => {
             // skills: e.currentTarget.skills.value.split(",").map((skill) => skill.trim()),
             salary: e.currentTarget.salary.value,
             time: e.currentTarget.time.value,
+            start_time: e.currentTarget.start_time.value,
             skills: skills,
             description: e.currentTarget.description.value
         });
@@ -82,13 +84,13 @@ const Home: NextPage = () => {
                             values={[
                                 {
                                     key: "cdi",
-                                    label: "Contrat à durée indéterminée",
-                                    subLabel: "CDI"
+                                    label: "CDI",
+                                    subLabel: "Contrat à durée indéterminée"
                                 },
                                 {
                                     key: "cdd",
-                                    label: "Contrat à durée déterminée",
-                                    subLabel: "CDD"
+                                    label: "CDD",
+                                    subLabel: "Contrat à durée déterminée"
                                 },
                                 { key: "stage", label: "Stage" }
                             ]}
@@ -100,6 +102,13 @@ const Home: NextPage = () => {
                             id="salary"
                             placeholder="Salaire"
                             leftIcon={BanknotesIcon}
+                        />
+                        <Input
+                            type={InputType.TEXT}
+                            name="start_time"
+                            id="start_time"
+                            placeholder="Date de début"
+                            leftIcon={FlagIcon}
                         />
                         <div>
                             <div className="flex space-x-2">

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { AuthorizationRole, useAuth } from "../context/AuthContext";
 
-export interface GetOfferResponse extends Array<GetOfferResponse> {
+export interface GetOfferResponse {
     author: string;
     contact: string;
     created_at: string;
@@ -16,10 +16,28 @@ export interface GetOfferResponse extends Array<GetOfferResponse> {
     title: string;
 }
 
-export function useOffer(ownOffer?: boolean, id?: number) {
+export interface GetOffersResponse extends Array<GetOfferResponse> { }
+
+export function getOffer(id: number) {
     const { token } = useAuth({ requiredRole: AuthorizationRole.All });
 
     const { data, error, mutate } = useSWR<GetOfferResponse>([
+        `/offers/${id}`,
+        token
+    ]);
+
+    return {
+        offer: data,
+        isLoading: !error && !data,
+        isError: error,
+        mutate
+    };
+}
+
+export function useOffer(ownOffer?: boolean, id?: number) {
+    const { token } = useAuth({ requiredRole: AuthorizationRole.All });
+
+    const { data, error, mutate } = useSWR<GetOffersResponse>([
         ownOffer ? "/companies/myoffers/" : `/offers${id ? `/${id}` : ""}`,
         token
     ]);
