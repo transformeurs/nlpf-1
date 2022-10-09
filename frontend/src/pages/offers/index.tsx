@@ -44,8 +44,8 @@ const OfferPanel: FC<OfferPanelProps> = ({
     showDeleteButton = false
 }) => {
     const router = useRouter();
-    const { token } = useAuth({ requiredRole: AuthorizationRole.Company });
-    const { mutate } = useOffer(true);
+    const { token } = useAuth({ requiredRole: AuthorizationRole.AnyUser });
+    const { mutate } = useOffer(showDeleteButton);
     const { addNotification } = useNotification();
     const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -147,9 +147,8 @@ const Home: NextPage = () => {
         redirectUrl: "/"
     });
     const router = useRouter();
-    const { offers, isLoading, isError } = useOffer(true);
-
     const isCompany = hasPermission(AuthorizationRole.Company);
+    const { offers, isLoading, isError } = useOffer(isCompany);
 
     return (
         <Layout breadcrumbs={[{ label: "Offres", href: "/offers" }]}>
