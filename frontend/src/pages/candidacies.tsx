@@ -4,7 +4,6 @@ import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import type { NextPage } from "next";
 import Button, { ButtonSize, ButtonType } from "../components/button";
 import Layout from "../components/layout";
-import LoginForm from "../components/loginForm";
 import LoadingIcon from "../components/loadingIcon";
 
 const Home: NextPage = () => {
@@ -16,7 +15,7 @@ const Home: NextPage = () => {
             author: "Société Générale",
             contact: "rh@sg.fr",
             skills: ["Stage", "Agile", "Typescript", "React"],
-            status : "En attente",
+            status: "En attente",
         },
         {
             createdAt: new Date(),
@@ -26,16 +25,16 @@ const Home: NextPage = () => {
             author: "SAP",
             contact: "rh@sap-les-meilleurs.com",
             skills: ["CDD", "Agile", "Python", "JavaScript", "Vue"],
-            status : "Acceptée",
+            status: "Acceptée",
         },
         {
             createdAt: new Date(),
             title: "Developper Backend",
             description: "Nous recherchons un développeur Backend pour notre équipe de développement.",
-            author : "HPE",
+            author: "HPE",
             contact: "recrutement@hpe.fr",
             skills: ["CDI", "Agile", "PHP", "Typescript", "Symfony"],
-            status : "Refusée",
+            status: "Refusée",
         }
     ];
 
