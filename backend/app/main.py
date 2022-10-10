@@ -21,6 +21,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "https://jobs.transformeu.rs"
 ]
 
 app.add_middleware(

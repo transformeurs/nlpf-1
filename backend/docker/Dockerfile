@@ -39,4 +39,4 @@ RUN chmod +x /docker-entrypoint.sh
 COPY ./app /app
 
 ENTRYPOINT /docker-entrypoint.sh $0 $@
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]
