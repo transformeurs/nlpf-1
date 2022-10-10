@@ -12,7 +12,7 @@ import { fetchApi, FetchMethod } from "../utils/fetch";
 const LoginForm: FC = () => {
     const { setToken } = useAuth({
         requiredRole: AuthorizationRole.Visitor,
-        redirectUrl: "/afterLogin"
+        redirectUrl: "/offers"
     });
     const { addNotification } = useNotification();
     const [buttonLoading, setButtonLoading] = useState(false);

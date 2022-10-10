@@ -21,6 +21,9 @@ import { NotificationStatus, useNotification } from "../../../context/Notificati
 import React from "react";
 import { fetchApi, FetchMethod, uploadFormImage } from "../../../utils/fetch";
 import Modal, { ModalIcon, ModalType } from "../../../components/modal";
+import CandidacyPanel from "../../../components/candidacy-panel";
+import { useCandidacy } from "../../../hooks/api-candidacy";
+import LoadingIcon from "../../../components/loadingIcon";
 
 interface CandidacyCreate {
     offer_id: number;
@@ -64,6 +67,7 @@ const OfferDetails: FC<OfferDetailsProps> = ({
     const [showModal, setShowModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [selectedAnswers, setSelectedAnswers] = useState<{ [id: number]: number }>({});
+    const { candidacies, isLoading, isError } = useCandidacy();
 
     const fields = [
         {
@@ -115,7 +119,7 @@ const OfferDetails: FC<OfferDetailsProps> = ({
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data: CandidacyCreate = {
-            offer_id: offerId,
+            offer_id: offerId
         };
 
         // First we submit the CV and Cover Letter to the API
@@ -125,13 +129,19 @@ const OfferDetails: FC<OfferDetailsProps> = ({
         }
 
         setButtonLoading(true);
-        const resume_url = await upload_file(cvInputRef.current!.files![0] as File, "/candidacies/upload_resume");
+        const resume_url = await upload_file(
+            cvInputRef.current!.files![0] as File,
+            "/candidacies/upload_resume"
+        );
         if (resume_url) {
             data.resume_url = resume_url;
         }
 
         if (coverLetterInputRef.current && coverLetterInputRef.current.files!.length > 0) {
-            const cover_letter_url = await upload_file(coverLetterInputRef.current!.files![0] as File, "/candidacies/upload_cover_letter");
+            const cover_letter_url = await upload_file(
+                coverLetterInputRef.current!.files![0] as File,
+                "/candidacies/upload_cover_letter"
+            );
             if (cover_letter_url) {
                 data.cover_letter_url = cover_letter_url;
             }
@@ -195,10 +205,12 @@ const OfferDetails: FC<OfferDetailsProps> = ({
                         <form className="mt-8 space-y-12" onSubmit={handleSubmit}>
                             <div className="space-y-6">
                                 <div className="border-b border-gray-200 pb-2">
-                                    <div className="text-lg font-medium text-gray-800">Documents</div>
+                                    <div className="text-lg font-medium text-gray-800">
+                                        Documents
+                                    </div>
                                     <div className="text-sm text-gray-600">
-                                        Téléchargez votre CV et votre lettre de motivation pour postuler
-                                        à l'offre.
+                                        Téléchargez votre CV et votre lettre de motivation pour
+                                        postuler à l'offre.
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-4">
@@ -221,8 +233,8 @@ const OfferDetails: FC<OfferDetailsProps> = ({
                                         Questionnaire
                                     </div>
                                     <div className="text-sm text-gray-600">
-                                        Répondez au questionnaire afin de donner une idée au recruteur
-                                        de votre niveau d'expertise.
+                                        Répondez au questionnaire afin de donner une idée au
+                                        recruteur de votre niveau d'expertise.
                                     </div>
                                 </div>
                             </div>
@@ -273,9 +285,29 @@ const OfferDetails: FC<OfferDetailsProps> = ({
 
                 {/* Offer current candidacies */}
                 {isCompany && (
-                    <div className="mt-6 space-y-10">
+                    <div className="col-span-6 mt-6 space-y-10">
                         <div className="text-2xl font-semibold text-indigo-700">Candidatures</div>
-                        <div>Candidatures ici...</div>
+                        <div className="w-full">
+                            {isLoading && (
+                                <div className="flex justify-center font-medium text-white">
+                                    <LoadingIcon className="mr-2 h-6 w-6" /> Chargement...
+                                </div>
+                            )}
+                            {candidacies &&
+                                candidacies.map((candidacy, candidacyIdx) => (
+                                    <CandidacyPanel
+                                        key={candidacyIdx}
+                                        candidacyId={candidacy.id}
+                                        title={candidacy.offer_title}
+                                        createdAt={new Date(candidacy.created_at)}
+                                        description={candidacy.offer_description}
+                                        candidateName={candidacy.candidate_name}
+                                        candidateEmail={candidacy.candidate_email}
+                                        skills={candidacy.skills}
+                                        status={candidacy.status}
+                                    />
+                                ))}
+                        </div>
                     </div>
                 )}
             </div>
@@ -342,7 +374,7 @@ const OfferPage: NextPage = () => {
             ]}
         >
             <div className="space-y-10">
-                {offer &&
+                {offer && (
                     <OfferDetails
                         offerId={offer.id}
                         title={offer.title}
@@ -357,7 +389,7 @@ const OfferPage: NextPage = () => {
                         skills={offer.skills}
                         isCompany={isCompany}
                     />
-                }
+                )}
             </div>
         </Layout>
     );
