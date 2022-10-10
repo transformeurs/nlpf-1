@@ -87,7 +87,7 @@ const SignUpForm: FC = () => {
         }
 
         setButtonLoading(true);
-        const response = await fetchApi(`/${userRole}/`, FetchMethod.POST, null, data);
+        const response = await fetchApi(`/${userRole}`, FetchMethod.POST, null, data);
         setButtonLoading(false);
 
         if (!response) {
