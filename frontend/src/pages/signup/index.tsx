@@ -73,7 +73,7 @@ const SignUpForm: FC = () => {
             data.photo_url = uploadResponse.data.filename;
         }
 
-        const response = await fetchApi(`/${userRole}/`, FetchMethod.POST, null, data);
+        const response = await fetchApi(`/${userRole}`, FetchMethod.POST, null, data);
 
         if (!response) {
             addNotification(
