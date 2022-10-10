@@ -3,22 +3,20 @@ import {
     BuildingOfficeIcon,
     CalendarIcon,
     ChevronDoubleRightIcon,
-    PencilIcon,
     EnvelopeIcon,
     FlagIcon,
-    HomeIcon
+    HomeIcon,
+    PencilIcon
 } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import Button, { ButtonSize, ButtonType } from "../../../components/button";
 import Layout from "../../../components/layout";
-import Input, { InputType } from "../../../components/input";
 import { AuthorizationRole, useAuth } from "../../../context/AuthContext";
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { getOffer } from "../../../hooks/api-offer";
 import FileInput from "../../../components/file-input";
 import { NotificationStatus, useNotification } from "../../../context/NotificationContext";
-import React from "react";
 import { fetchApi, FetchMethod, uploadFormImage } from "../../../utils/fetch";
 import Modal, { ModalIcon, ModalType } from "../../../components/modal";
 import CandidacyPanel from "../../../components/candidacy-panel";

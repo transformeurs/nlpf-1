@@ -4,21 +4,21 @@ import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import LoadingIcon from "./loadingIcon";
 
 export interface TextAreaProps {
-	name: string;
-	id: string;
-	value?: string;
-	rows?: number;
-	cols?: number;
-	defaultValue?: string;
-	placeholder?: string;
-	leftIcon?: ComponentType<{ className?: string }>;
-	rightIcon?: ComponentType<{ className?: string }>;
-	disabled?: boolean;
-	autoComplete?: string;
-	required?: boolean;
-	error?: string | ((value: string) => Promise<string | null>);
-	className?: string;
-	onChange?: (value: string | null) => void;
+    name: string;
+    id: string;
+    value?: string;
+    rows?: number;
+    cols?: number;
+    defaultValue?: string;
+    placeholder?: string;
+    leftIcon?: ComponentType<{ className?: string }>;
+    rightIcon?: ComponentType<{ className?: string }>;
+    disabled?: boolean;
+    autoComplete?: string;
+    required?: boolean;
+    error?: string | ((value: string) => Promise<string | null>);
+    className?: string;
+    onChange?: (value: string | null) => void;
 }
 
 const TextArea: FC<TextAreaProps> = ({

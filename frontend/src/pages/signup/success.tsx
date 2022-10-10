@@ -1,5 +1,4 @@
 import { NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import Button, { ButtonSize, ButtonType } from "../../components/button";
 import Layout from "../../components/layout";

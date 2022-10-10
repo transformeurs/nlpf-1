@@ -1,15 +1,5 @@
-import {
-    BuildingOfficeIcon,
-    CalendarIcon,
-    CheckBadgeIcon,
-    EnvelopeIcon,
-    QuestionMarkCircleIcon,
-    XCircleIcon
-} from "@heroicons/react/20/solid";
 import type { NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import Button, { ButtonSize, ButtonType } from "../../components/button";
 import Layout from "../../components/layout";
 import LoadingIcon from "../../components/loadingIcon";
 import { AuthorizationRole, useAuth } from "../../context/AuthContext";

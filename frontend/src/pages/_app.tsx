@@ -6,7 +6,7 @@ import Head from "next/head";
 import { NotificationsProvider } from "../context/NotificationContext";
 import Notifications from "../components/notifications";
 import { NextPage } from "next";
-import { fetchFun, fetchSwr } from "../utils/fetch";
+import { fetchSwr } from "../utils/fetch";
 import { AuthProvider } from "../context/AuthContext";
 
 type NextPageWithLayout = NextPage & {

@@ -2,7 +2,7 @@ import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
 import Link from "next/link";
 import { FC, useState } from "react";
-import Button, { ButtonType, ButtonSize } from "../components/button";
+import Button, { ButtonSize, ButtonType } from "../components/button";
 import Input, { InputType } from "../components/input";
 import Layout from "../components/layout";
 import { AuthorizationRole, useAuth } from "../context/AuthContext";

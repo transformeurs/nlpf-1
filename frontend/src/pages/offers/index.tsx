@@ -1,9 +1,9 @@
 import {
+    BriefcaseIcon as BriefcaseIconSolid,
     BuildingOfficeIcon,
     CalendarIcon,
     EnvelopeIcon,
     TrashIcon,
-    BriefcaseIcon as BriefcaseIconSolid,
     WrenchIcon
 } from "@heroicons/react/20/solid";
 import { CursorArrowRaysIcon } from "@heroicons/react/24/solid";

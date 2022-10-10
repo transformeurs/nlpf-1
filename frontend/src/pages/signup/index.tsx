@@ -1,20 +1,13 @@
-import {
-    UserIcon,
-    KeyIcon,
-    DocumentTextIcon,
-    EnvelopeIcon,
-    BuildingOfficeIcon
-} from "@heroicons/react/20/solid";
+import { BuildingOfficeIcon, EnvelopeIcon, KeyIcon, UserIcon } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React from "react";
-import { FC, useState } from "react";
-import Button, { ButtonType, ButtonSize } from "../../components/button";
+import React, { FC, useState } from "react";
+import Button, { ButtonSize, ButtonType } from "../../components/button";
 import Input, { InputType } from "../../components/input";
 import Layout from "../../components/layout";
 import TextArea from "../../components/textarea";
-import { useNotification, NotificationStatus } from "../../context/NotificationContext";
-import { fetchApi, uploadFormImage, FetchMethod } from "../../utils/fetch";
+import { NotificationStatus, useNotification } from "../../context/NotificationContext";
+import { fetchApi, FetchMethod, uploadFormImage } from "../../utils/fetch";
 
 interface SignUpPayload {
     name: string;
