@@ -1,9 +1,10 @@
 import {
+    BriefcaseIcon as BriefcaseIconSolid,
     BuildingOfficeIcon,
     CalendarIcon,
     EnvelopeIcon,
     TrashIcon,
-    BriefcaseIcon as BriefcaseIconSolid
+    WrenchIcon
 } from "@heroicons/react/20/solid";
 import { CursorArrowRaysIcon } from "@heroicons/react/24/solid";
 import type { NextPage } from "next";
@@ -17,6 +18,8 @@ import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import { fetchApi, FetchMethod } from "../../utils/fetch";
 import { NotificationStatus, useNotification } from "../../context/NotificationContext";
+import Link from "next/link";
+import classNames from "../../utils/classNames";
 
 export interface OfferPanelProps {
     offerId: number;
@@ -28,7 +31,7 @@ export interface OfferPanelProps {
     contact: string;
     skills: string[];
     responseTime: number;
-    showDeleteButton: boolean;
+    isCompany: boolean;
 }
 
 const OfferPanel: FC<OfferPanelProps> = ({
@@ -41,11 +44,11 @@ const OfferPanel: FC<OfferPanelProps> = ({
     contact,
     skills,
     responseTime,
-    showDeleteButton = false
+    isCompany = false
 }) => {
     const router = useRouter();
     const { token } = useAuth({ requiredRole: AuthorizationRole.AnyUser });
-    const { mutate } = useOffer(showDeleteButton);
+    const { mutate } = useOffer(isCompany);
     const { addNotification } = useNotification();
     const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -53,7 +56,11 @@ const OfferPanel: FC<OfferPanelProps> = ({
         <div className="flex rounded bg-white p-6 shadow-lg">
             {/* Box content */}
             <div className="w-full">
-                <div className="text-xl font-semibold text-indigo-700">{title}</div>
+                <Link href={`/offers/${offerId}`}>
+                    <div className="cursor-pointer text-xl font-semibold text-indigo-700">
+                        {title}
+                    </div>
+                </Link>
 
                 <div className="mt-0.5 flex items-center text-sm text-gray-600">
                     <div className="flex">
@@ -68,7 +75,8 @@ const OfferPanel: FC<OfferPanelProps> = ({
                 <div className="my-3">{description}</div>
                 <div className="flex items-center font-medium text-gray-600">
                     <BuildingOfficeIcon className="mr-1 h-5 w-5" />
-                    {author} <EnvelopeIcon className="mr-1 ml-5 h-5 w-5" />
+                    {author}
+                    <EnvelopeIcon className="mr-1 ml-5 h-5 w-5" />
                     {contact}
                 </div>
                 <div className="mt-4 flex space-x-2">
@@ -86,7 +94,7 @@ const OfferPanel: FC<OfferPanelProps> = ({
             {/* Right content */}
             <div className="flex flex-col">
                 <div className="space-y-1">
-                    {showDeleteButton && (
+                    {isCompany && (
                         <Button
                             type={ButtonType.DANGER}
                             size={ButtonSize.XL}
@@ -125,8 +133,8 @@ const OfferPanel: FC<OfferPanelProps> = ({
                     <Button
                         type={ButtonType.PRIMARY}
                         size={ButtonSize.XL}
-                        label={"Postuler"}
-                        rightIcon={CursorArrowRaysIcon}
+                        label={isCompany ? "Consulter" : "Postuler"}
+                        rightIcon={isCompany ? WrenchIcon : CursorArrowRaysIcon}
                         className="w-full"
                         onClick={() => router.push(`/offers/${offerId}`)}
                     />
@@ -149,7 +157,20 @@ const Home: NextPage = () => {
     const router = useRouter();
     const isCompany = hasPermission(AuthorizationRole.Company);
     const { offers, isLoading, isError } = useOffer(isCompany);
+    const [currentFilter, setCurrentFilter] = useState("Toutes");
+    const [currentSort, setCurrentSort] = useState("Les plus récentes");
 
+    const filters = [
+        "Toutes",
+        "Contrat à durée indéterminée",
+        "Contrat à durée déterminée",
+        "Stage"
+    ];
+
+    const sorts = ["Les plus récentes", "Les plus anciennes"];
+
+    // @ts-ignore
+    // @ts-ignore
     return (
         <Layout breadcrumbs={[{ label: "Offres", href: "/offers" }]}>
             <div className="space-y-10">
@@ -177,22 +198,68 @@ const Home: NextPage = () => {
                         />
                     </div>
                 )}
-                {offers &&
-                    offers.map((offer, offerIdx) => (
-                        <OfferPanel
-                            key={offerIdx}
-                            offerId={offer.id}
-                            title={offer.title}
-                            createdAt={new Date(offer.created_at)}
-                            time={offer.time}
-                            description={offer.description}
-                            author={offer.author}
-                            contact={offer.contact}
-                            skills={offer.skills}
-                            responseTime={offer.response_time}
-                            showDeleteButton={isCompany}
-                        />
+                <div className="flex space-x-2 rounded bg-white p-6 shadow-lg">
+                    {filters.map((filter, filterIdx) => (
+                        <button
+                            key={filterIdx}
+                            className={classNames(
+                                "rounded-2xl px-2 py-0.5",
+                                filter === currentFilter
+                                    ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                                    : "border border-gray-400 text-gray-500 hover:bg-gray-100"
+                            )}
+                            onClick={() => setCurrentFilter(filter)}
+                        >
+                            {filter}
+                        </button>
                     ))}
+                    <div className="grow"></div>
+                    {sorts.map((sort, sortIdx) => (
+                        <button
+                            key={sortIdx}
+                            className={classNames(
+                                "rounded-2xl px-2 py-0.5",
+                                sort === currentSort
+                                    ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                                    : "border border-gray-400 text-gray-500 hover:bg-gray-100"
+                            )}
+                            onClick={() => setCurrentSort(sort)}
+                        >
+                            {sort}
+                        </button>
+                    ))}
+                </div>
+                {offers &&
+                    offers
+                        .filter(
+                            (offer) => currentFilter === "Toutes" || offer.time === currentFilter
+                        )
+                        .map((offer, offerIdx) => ({
+                            ...offer,
+                            createdAt: new Date(offer.created_at)
+                        }))
+                        .sort((a, b) =>
+                            currentSort === "Les plus récentes"
+                                ? // @ts-ignore
+                                  a.createdAt - b.createdAt
+                                : // @ts-ignore
+                                  b.createdAt - a.createdAt
+                        )
+                        .map((offer, offerIdx) => (
+                            <OfferPanel
+                                key={offerIdx}
+                                offerId={offer.id}
+                                title={offer.title}
+                                createdAt={new Date(offer.created_at)}
+                                time={offer.time}
+                                description={offer.description}
+                                author={offer.author}
+                                contact={offer.contact}
+                                skills={offer.skills}
+                                responseTime={offer.response_time}
+                                isCompany={isCompany}
+                            />
+                        ))}
             </div>
         </Layout>
     );

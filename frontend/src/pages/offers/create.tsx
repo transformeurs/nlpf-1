@@ -84,13 +84,13 @@ const Home: NextPage = () => {
                             values={[
                                 {
                                     key: "cdi",
-                                    label: "CDI",
-                                    subLabel: "Contrat à durée indéterminée"
+                                    label: "Contrat à durée indéterminée",
+                                    subLabel: "CDI"
                                 },
                                 {
                                     key: "cdd",
-                                    label: "CDD",
-                                    subLabel: "Contrat à durée déterminée"
+                                    label: "Contrat à durée déterminée",
+                                    subLabel: "CDD"
                                 },
                                 { key: "stage", label: "Stage" }
                             ]}

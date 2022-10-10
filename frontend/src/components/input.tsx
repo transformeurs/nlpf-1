@@ -4,9 +4,9 @@ import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import LoadingIcon from "./loadingIcon";
 
 export enum InputType {
-	TEXT,
-	PASSWORD,
-	EMAIL
+    TEXT,
+    PASSWORD,
+    EMAIL
 }
 
 export interface InputProps {

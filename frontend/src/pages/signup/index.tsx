@@ -1,20 +1,13 @@
-import {
-    UserIcon,
-    KeyIcon,
-    DocumentTextIcon,
-    EnvelopeIcon,
-    BuildingOfficeIcon
-} from "@heroicons/react/20/solid";
+import { BuildingOfficeIcon, EnvelopeIcon, KeyIcon, UserIcon } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React from "react";
-import { FC, useState } from "react";
-import Button, { ButtonType, ButtonSize } from "../../components/button";
+import React, { FC, useState } from "react";
+import Button, { ButtonSize, ButtonType } from "../../components/button";
 import Input, { InputType } from "../../components/input";
 import Layout from "../../components/layout";
 import TextArea from "../../components/textarea";
-import { useNotification, NotificationStatus } from "../../context/NotificationContext";
-import { fetchApi, uploadFormImage, FetchMethod } from "../../utils/fetch";
+import { NotificationStatus, useNotification } from "../../context/NotificationContext";
+import { fetchApi, FetchMethod, uploadFormImage } from "../../utils/fetch";
 
 interface SignUpPayload {
     name: string;
@@ -68,27 +61,19 @@ const SignUpForm: FC = () => {
         formData.append("file", hiddenFileInput.current!.files![0] as File);
         setButtonLoading(true);
         const uploadResponse = await uploadFormImage(`/${userRole}/uploadImage`, formData);
-        setButtonLoading(false);
 
-        if (!uploadResponse) {
+        if (!uploadResponse || uploadResponse.statusCode !== 200) {
             addNotification(
                 NotificationStatus.Error,
                 "Une erreur est survenue lors de l'envoi de votre photo."
             );
+            setButtonLoading(false);
             return;
-        } else if (uploadResponse.statusCode === 200) {
-            data.photo_url = uploadResponse.data.filename;
         } else {
-            addNotification(
-                NotificationStatus.Error,
-                "Une erreur est survenue lors de l'envoi de votre photo."
-            );
-            return;
+            data.photo_url = uploadResponse.data.filename;
         }
 
-        setButtonLoading(true);
         const response = await fetchApi(`/${userRole}`, FetchMethod.POST, null, data);
-        setButtonLoading(false);
 
         if (!response) {
             addNotification(
@@ -102,6 +87,7 @@ const SignUpForm: FC = () => {
         } else {
             addNotification(NotificationStatus.Error, "Une erreur inconnue est survenue.");
         }
+        setButtonLoading(false);
     };
 
     return (

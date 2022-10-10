@@ -1,10 +1,9 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC, Fragment, ReactNode } from "react";
 import classNames from "../utils/classNames";
-import { Fragment } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
-import { BellIcon, XMarkIcon, Bars3Icon } from "@heroicons/react/24/outline";
-import { BriefcaseIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { BriefcaseIcon, ChevronRightIcon, EnvelopeIcon, UserIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { AuthorizationRole, useAuth } from "../context/AuthContext";
 
@@ -16,15 +15,14 @@ interface LayoutProps {
     children: ReactNode;
 }
 
-const navigation = [
-    { name: "Accueil", href: "/" },
-    { name: "Offres", href: "/offers" },
-    { name: "Candidatures", href: "/candidacies" }
-];
-
 const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
     const router = useRouter();
-    const { user, disconnect } = useAuth({ requiredRole: AuthorizationRole.All });
+    const { user, disconnect, hasPermission } = useAuth({ requiredRole: AuthorizationRole.All });
+
+    const navigation = [
+        { name: "Offres", href: "/offers", requiredRole: AuthorizationRole.AnyUser },
+        { name: "Candidatures", href: "/candidacies", requiredRole: AuthorizationRole.AnyUser }
+    ].filter((item) => hasPermission(item.requiredRole));
 
     const userNavigation = [
         {
@@ -102,6 +100,16 @@ const Layout: FC<LayoutProps> = ({ breadcrumbs, children }) => {
                                                 leaveTo="transform opacity-0 scale-95"
                                             >
                                                 <Menu.Items className="absolute -right-2 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                    <div className="w-full px-4 py-2 text-sm font-medium text-gray-800">
+                                                        <div className="flex items-center">
+                                                            <UserIcon className="mr-1.5 h-5 w-5" />{" "}
+                                                            {user.name}
+                                                        </div>
+                                                        <div className="mt-1 flex items-center">
+                                                            <EnvelopeIcon className="mr-1.5 h-5 w-5" />{" "}
+                                                            {user.email}
+                                                        </div>
+                                                    </div>
                                                     {userNavigation.map((item) => (
                                                         <Menu.Item key={item.name}>
                                                             {({ active }) => (

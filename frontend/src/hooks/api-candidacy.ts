@@ -49,3 +49,19 @@ export function useCandidacy(id?: number) {
         };
     }
 }
+
+export function useOfferCandidacies(offerId: number) {
+    const { token } = useAuth({ requiredRole: AuthorizationRole.Company });
+
+    const { data, error, mutate } = useSWR<GetCandidaciesResponse>([
+        `/offers/${offerId}/candidacies`,
+        token
+    ]);
+
+    return {
+        candidacies: data,
+        isLoading: !error && !data,
+        isError: error,
+        mutate
+    };
+}

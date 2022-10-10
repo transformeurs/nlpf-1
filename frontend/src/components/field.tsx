@@ -1,9 +1,9 @@
 import { FC, ReactNode } from "react";
 
 export interface FieldProps {
-	label: string;
-	optional?: boolean;
-	children: ReactNode;
+    label: string;
+    optional?: boolean;
+    children: ReactNode;
 }
 
 const Field: FC<FieldProps> = ({ label, optional, children }) => {
