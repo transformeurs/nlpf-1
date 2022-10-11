@@ -19,6 +19,7 @@ class Offer(Base):
     salary = Column(Integer, index=True)
     time = Column(String, index=True)
     start_time = Column(String, index=True)
+    views = Column(Integer, index = True, default=0)
 
     company = relationship("Company", back_populates="offers")
     candidacies = relationship("Candidacy", back_populates="offer")

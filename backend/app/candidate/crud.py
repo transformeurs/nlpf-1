@@ -23,6 +23,7 @@ def create_candidate(db: Session, candidate: schemas.CandidateCreate):
     db_candidate = models.Candidate(
         email=candidate.email,
         name=candidate.name,
+        age=candidate.age,
         photo_url=candidate.photo_url,
         description=candidate.description,
         pronouns=candidate.pronouns

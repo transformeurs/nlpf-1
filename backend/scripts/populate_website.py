@@ -6,6 +6,7 @@ BACKEND_URL = os.getenv("BACKEND_URL") or "http://localhost:8000"
 candidates = [
     {
         "name": "John Doe",
+        "age": 25,
         "email": "john.doe@gmail.com",
         "password": "name123@!",
         "description": "Je cherche un stage dans le développement web.",
@@ -14,6 +15,7 @@ candidates = [
     },
     {
         "name": "Mary Jane",
+        "age": 22,
         "email": "mary.jane@gmail.com",
         "password": "name123@!",
         "description": "Je cherche un emploi dans la restauration.",

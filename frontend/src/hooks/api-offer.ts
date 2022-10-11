@@ -14,6 +14,7 @@ export interface GetOfferResponse {
     start_time: string;
     time: string;
     title: string;
+    views: number;
 }
 
 export interface GetOffersResponse extends Array<GetOfferResponse> { }

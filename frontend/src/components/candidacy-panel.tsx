@@ -19,6 +19,7 @@ export interface CandidacyPanelProps {
     description: string;
     candidateName?: string;
     candidateEmail?: string;
+    candidateAge?: number;
     companyName?: string;
     companyEmail?: string;
     skills: string[];
@@ -32,6 +33,7 @@ const CandidacyPanel: FC<CandidacyPanelProps> = ({
     description,
     candidateName,
     candidateEmail,
+    candidateAge,
     companyName,
     companyEmail,
     skills,
@@ -126,7 +128,7 @@ const CandidacyPanel: FC<CandidacyPanelProps> = ({
                 </div>
                 <div>
                     <div className="mt-2 whitespace-nowrap text-sm text-gray-600">
-                        Candidature envoyée le {createdAt.toDateString()}
+                        Candidature envoyée le {createdAt.toLocaleDateString()}
                     </div>
                 </div>
             </div>

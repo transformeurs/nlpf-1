@@ -27,6 +27,7 @@ def convert_to_schema(candidacy: models.Candidacy) -> schemas.Candidacy:
         offer_id=candidacy.offer_id,
         candidate_id=candidacy.candidate_id,
         candidate_name=candidacy.candidate.name,
+        candidate_age=candidacy.candidate.age,
         candidate_email=candidacy.candidate.email,
         company_name=candidacy.offer.company.name,
         company_email=candidacy.offer.company.email,

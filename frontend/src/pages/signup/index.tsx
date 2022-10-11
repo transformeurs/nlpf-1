@@ -1,4 +1,4 @@
-import { BuildingOfficeIcon, EnvelopeIcon, KeyIcon, UserIcon } from "@heroicons/react/20/solid";
+import { BuildingOfficeIcon, CakeIcon, EnvelopeIcon, KeyIcon, UserIcon } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
@@ -11,6 +11,7 @@ import { fetchApi, FetchMethod, uploadFormImage } from "../../utils/fetch";
 
 interface SignUpPayload {
     name: string;
+    age : number;
     email: string;
     password: string;
     description?: string;
@@ -50,6 +51,7 @@ const SignUpForm: FC = () => {
         event.preventDefault();
         const data: SignUpPayload = {
             name: event.currentTarget.username.value,
+            age: event.currentTarget.age.value,
             email: event.currentTarget.email.value,
             password: event.currentTarget.password.value,
             description: event.currentTarget.description.value,
@@ -143,6 +145,23 @@ const SignUpForm: FC = () => {
                                     required
                                 />
                             </div>
+
+                            {userRole == "candidates" && (
+                                <div>
+                                    <label htmlFor="age" className="sr-only">
+                                        Âge
+                                    </label>
+                                    <Input
+                                        type={InputType.TEXT}
+                                        name={"age"}
+                                        id={"age"}
+                                        placeholder={
+                                            "Âge"
+                                        }
+                                        leftIcon={CakeIcon}
+                                    />
+                                </div>
+                            )}
 
                             <div>
                                 <label htmlFor="email" className="sr-only">

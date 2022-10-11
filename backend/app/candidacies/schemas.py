@@ -24,6 +24,7 @@ class Candidacy(BaseModel):
 
     candidate_id: int
     candidate_name: str
+    candidate_age: int
     candidate_email: EmailStr
 
     company_name: str
