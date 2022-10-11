@@ -73,7 +73,7 @@ const OfferDetails: FC<OfferDetailsProps> = ({
     const averageAge = candidacies && candidacies.reduce((acc, curr) => acc + curr.candidate_age, 0) / candidacies.length;
 
     useEffect(() => {
-        fetchApi(`/offers/${offerId}/views`, FetchMethod.POST, token);
+        !isCompany && fetchApi(`/offers/${offerId}/views`, FetchMethod.POST, token);
     }, []);
 
     const fields = [
