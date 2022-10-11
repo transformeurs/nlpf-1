@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
 
 from ..database import Base
 
@@ -10,7 +10,7 @@ class Candidacy(Base):
     id = Column(Integer, primary_key=True, index=True)
     candidate_id = Column(Integer, ForeignKey("candidate.id"), index=True)
     offer_id = Column(Integer, ForeignKey("offer.id"), index=True)
-    created_at = Column(DateTime(timezone=False), default=datetime.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(String, index=True)
     cover_letter_url = Column(String, index=True)
     resume_url = Column(String, index=True)

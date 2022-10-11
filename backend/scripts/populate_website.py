@@ -62,7 +62,7 @@ offers = [
             "skills": ["Service", "Polyvalence"],
             "location": "Le Kremlin-Bicêtre",
             "salary": 1600,
-            "time": "CDI",
+            "time": "Contrat à durée indéterminée",
             "start_time": "Maintenant",
         }
     },

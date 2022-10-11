@@ -69,9 +69,11 @@ const OfferDetails: FC<OfferDetailsProps> = ({
     const [selectedAnswers, setSelectedAnswers] = useState<{ [id: number]: number }>({});
     const { offer } = getOffer(offerId);
     const { candidacies, isLoading, isError } = useCandidacy();
-    /* compute the average candidate age */
+
+    // Compute the average candidate age
     const averageAge = candidacies && candidacies.reduce((acc, curr) => acc + curr.candidate_age, 0) / candidacies.length;
 
+    // Count as a view if the user is a candidate
     useEffect(() => {
         !isCompany && fetchApi(`/offers/${offerId}/views`, FetchMethod.POST, token);
     }, []);
@@ -144,8 +146,9 @@ const OfferDetails: FC<OfferDetailsProps> = ({
         }
     };
 
-    const cvInputRef = React.createRef<HTMLInputElement>();
-    const coverLetterInputRef = React.createRef<HTMLInputElement>();
+    const cvInputRef = React.useRef<HTMLInputElement>(null);
+    const coverLetterInputRef = React.useRef<HTMLInputElement>(null);
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data: CandidacyCreate = {
@@ -167,7 +170,7 @@ const OfferDetails: FC<OfferDetailsProps> = ({
             data.resume_url = resume_url;
         }
 
-        if (coverLetterInputRef.current && coverLetterInputRef.current.files!.length > 0) {
+        if (coverLetterInputRef.current !== null && coverLetterInputRef.current.files!.length > 0) {
             const cover_letter_url = await upload_file(
                 coverLetterInputRef.current!.files![0] as File,
                 "/candidacies/upload_cover_letter"
@@ -312,7 +315,7 @@ const OfferDetails: FC<OfferDetailsProps> = ({
                         </form>
                     </div>
                 )}
-                    
+
                 {/* Statistiques */}
                 {isCompany && (
                     <div className="col-span-6 mt-6 space-y-10 bg">

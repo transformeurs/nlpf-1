@@ -3,6 +3,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import Button, { ButtonSize, ButtonType } from "../../components/button";
+import FileInput from "../../components/file-input";
 import Input, { InputType } from "../../components/input";
 import Layout from "../../components/layout";
 import TextArea from "../../components/textarea";
@@ -11,7 +12,7 @@ import { fetchApi, FetchMethod, uploadFormImage } from "../../utils/fetch";
 
 interface SignUpPayload {
     name: string;
-    age : number;
+    age: number;
     email: string;
     password: string;
     description?: string;
@@ -30,20 +31,7 @@ const SignUpForm: FC = () => {
     };
 
     // Create a reference to the hidden file input element
-    const hiddenFileInput = React.useRef<HTMLInputElement>(null);
-    const fileName = React.useRef<HTMLSpanElement>(null);
-
-    // Programatically click the hidden file input element
-    // when the Button component is clicked
-    const handleFileClick = () => {
-        hiddenFileInput.current?.click();
-    };
-
-    // Update the text for the file input
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const fileUploaded = event.target.files?.[0];
-        fileName.current!.textContent = fileUploaded?.name || "";
-    };
+    const photoFileInput = React.useRef<HTMLInputElement>(null);
 
     // Handles the submit event on form submit
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -58,21 +46,24 @@ const SignUpForm: FC = () => {
             pronouns: userRole === "candidates" ? event.currentTarget.pronouns.value : null
         };
 
-        // First we submit the photo to the API through a FormData object
-        const formData = new FormData();
-        formData.append("file", hiddenFileInput.current!.files![0] as File);
         setButtonLoading(true);
-        const uploadResponse = await uploadFormImage(`/${userRole}/uploadImage`, formData);
 
-        if (!uploadResponse || uploadResponse.statusCode !== 200) {
-            addNotification(
-                NotificationStatus.Error,
-                "Une erreur est survenue lors de l'envoi de votre photo."
-            );
-            setButtonLoading(false);
-            return;
-        } else {
-            data.photo_url = uploadResponse.data.filename;
+        // First we submit the photo to the API through a FormData object
+        if (photoFileInput.current !== null && photoFileInput.current.files!.length > 0) {
+            const formData = new FormData();
+            formData.append("file", photoFileInput.current!.files![0] as File);
+            const uploadResponse = await uploadFormImage(`/${userRole}/uploadImage`, formData);
+
+            if (!uploadResponse || uploadResponse.statusCode !== 200) {
+                addNotification(
+                    NotificationStatus.Error,
+                    "Une erreur est survenue lors de l'envoi de votre photo."
+                );
+                setButtonLoading(false);
+                return;
+            } else {
+                data.photo_url = uploadResponse.data.filename;
+            }
         }
 
         const response = await fetchApi(`/${userRole}`, FetchMethod.POST, null, data);
@@ -146,23 +137,6 @@ const SignUpForm: FC = () => {
                                 />
                             </div>
 
-                            {userRole == "candidates" && (
-                                <div>
-                                    <label htmlFor="age" className="sr-only">
-                                        Âge
-                                    </label>
-                                    <Input
-                                        type={InputType.TEXT}
-                                        name={"age"}
-                                        id={"age"}
-                                        placeholder={
-                                            "Âge"
-                                        }
-                                        leftIcon={CakeIcon}
-                                    />
-                                </div>
-                            )}
-
                             <div>
                                 <label htmlFor="email" className="sr-only">
                                     E-mail
@@ -193,20 +167,23 @@ const SignUpForm: FC = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label htmlFor="passwordConfirm" className="sr-only">
-                                    Password Confirmation
-                                </label>
-                                <Input
-                                    type={InputType.PASSWORD}
-                                    name={"passwordConfirm"}
-                                    id={"passwordConfirm"}
-                                    autoComplete={"new-password"}
-                                    placeholder={"Confirmer le mot de passe"}
-                                    leftIcon={KeyIcon}
-                                    required
-                                />
-                            </div>
+                            {userRole == "candidates" && (
+                                <div>
+                                    <label htmlFor="age" className="sr-only">
+                                        Âge
+                                    </label>
+                                    <Input
+                                        type={InputType.TEXT}
+                                        name={"age"}
+                                        id={"age"}
+                                        placeholder={
+                                            "Âge"
+                                        }
+                                        leftIcon={CakeIcon}
+                                        required
+                                    />
+                                </div>
+                            )}
 
                             <div>
                                 <div>
@@ -239,26 +216,7 @@ const SignUpForm: FC = () => {
 
                             <div>
                                 Photo de profil
-                                <div className="mt-3">
-                                    <Button
-                                        type={ButtonType.SECONDARY}
-                                        size={ButtonSize.MD}
-                                        label={"Choisir une photo"}
-                                        onClick={handleFileClick}
-                                    />
-                                    <span ref={fileName} className="text-s ml-3 text-gray-600">
-                                        Aucun fichier choisi
-                                    </span>
-                                </div>
-                                {/* Hidden file input, handled by the Button component */}
-                                <input
-                                    type="file"
-                                    id="photo"
-                                    name="photo"
-                                    ref={hiddenFileInput}
-                                    style={{ display: "none" }}
-                                    onChange={handleFileChange}
-                                />
+                                <FileInput ref={photoFileInput} className="mt-3" />
                             </div>
 
                             <div>

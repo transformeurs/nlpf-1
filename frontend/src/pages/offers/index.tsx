@@ -169,6 +169,12 @@ const Home: NextPage = () => {
 
     const sorts = ["Les plus récentes", "Les plus anciennes"];
 
+    if (offers) {
+        offers.forEach(element => {
+            console.log(new Date(element.created_at));
+        });
+    }
+
     // @ts-ignore
     // @ts-ignore
     return (
@@ -241,13 +247,13 @@ const Home: NextPage = () => {
                         .sort((a, b) =>
                             currentSort === "Les plus récentes"
                                 ? // @ts-ignore
-                                  a.createdAt - b.createdAt
+                                a.createdAt - b.createdAt
                                 : // @ts-ignore
-                                  b.createdAt - a.createdAt
+                                b.createdAt - a.createdAt
                         )
                         .map((offer, offerIdx) => (
                             <OfferPanel
-                                key={offerIdx}
+                                key={offer.id}
                                 offerId={offer.id}
                                 title={offer.title}
                                 createdAt={new Date(offer.created_at)}
