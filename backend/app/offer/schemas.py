@@ -25,6 +25,7 @@ class Offer(BaseModel):
     time: Union[str, None] = None
     start_time: Union[str, None] = None
     response_time: Union[int, None] = None
+    views: Union[int, None] = None
 
     class Config:
         orm_mode = True

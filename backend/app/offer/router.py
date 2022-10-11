@@ -28,7 +28,8 @@ def convert_db_offer_to_offer(offer: models.Offer):
         salary=offer.salary,
         time=offer.time,
         start_time=offer.start_time,
-        response_time=0
+        response_time=0,
+        views=offer.views
     )
 
 # Get offer by id, need to be authenticated (company or candidate)
@@ -37,6 +38,17 @@ async def get_offer_by_id(offer_id: int, db: Session = Depends(get_db), _: Accou
     offer = crud.get_offer(db, offer_id)
     if offer is None:
         raise HTTPException(status_code=404, detail="Offer not found")
+    return convert_db_offer_to_offer(offer)
+
+# Add a view to an offer
+@router.post("/offers/{offer_id}/views", response_model=schemas.Offer)
+async def add_view_to_offer(offer_id: int, db: Session = Depends(get_db), _: Account = Depends(get_current_account)):
+    offer = crud.get_offer(db, offer_id)
+    if offer is None:
+        raise HTTPException(status_code=404, detail="Offer not found")
+    offer.views += 1
+    db.commit()
+    db.refresh(offer)
     return convert_db_offer_to_offer(offer)
 
 # Delete offer by ID, need to be authenticated as the offer's owner

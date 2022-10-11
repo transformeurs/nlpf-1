@@ -7,6 +7,7 @@ export interface GetCandidacyResponse {
     candidate_id: number;
     candidate_name: string;
     candidate_email: string;
+    candidate_age: number;
     company_name: string;
     company_email: string;
     created_at: string;

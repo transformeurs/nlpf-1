@@ -6,15 +6,16 @@ import {
     EnvelopeIcon,
     FlagIcon,
     HomeIcon,
-    PencilIcon
+    PencilIcon,
+    UserGroupIcon
 } from "@heroicons/react/20/solid";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import Button, { ButtonSize, ButtonType } from "../../../components/button";
 import Layout from "../../../components/layout";
 import { AuthorizationRole, useAuth } from "../../../context/AuthContext";
-import React, { FC, useState } from "react";
-import { getOffer } from "../../../hooks/api-offer";
+import React, { FC, useEffect, useState } from "react";
+import { getOffer, useOffer } from "../../../hooks/api-offer";
 import FileInput from "../../../components/file-input";
 import { NotificationStatus, useNotification } from "../../../context/NotificationContext";
 import { fetchApi, FetchMethod, uploadFormImage } from "../../../utils/fetch";
@@ -22,6 +23,7 @@ import Modal, { ModalIcon, ModalType } from "../../../components/modal";
 import CandidacyPanel from "../../../components/candidacy-panel";
 import { useCandidacy } from "../../../hooks/api-candidacy";
 import LoadingIcon from "../../../components/loadingIcon";
+import { CakeIcon, ChartBarIcon, ChartPieIcon, EyeDropperIcon, EyeIcon, FaceSmileIcon, KeyIcon } from "@heroicons/react/24/solid";
 
 interface CandidacyCreate {
     offer_id: number;
@@ -65,7 +67,14 @@ const OfferDetails: FC<OfferDetailsProps> = ({
     const [showModal, setShowModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [selectedAnswers, setSelectedAnswers] = useState<{ [id: number]: number }>({});
+    const { offer } = getOffer(offerId);
     const { candidacies, isLoading, isError } = useCandidacy();
+    /* compute the average candidate age */
+    const averageAge = candidacies && candidacies.reduce((acc, curr) => acc + curr.candidate_age, 0) / candidacies.length;
+
+    useEffect(() => {
+        !isCompany && fetchApi(`/offers/${offerId}/views`, FetchMethod.POST, token);
+    }, []);
 
     const fields = [
         {
@@ -84,6 +93,29 @@ const OfferDetails: FC<OfferDetailsProps> = ({
         { icon: FlagIcon, label: "Début", value: startTime },
         { icon: PencilIcon, label: "Contrat", value: time }
     ];
+
+    const stats = [
+        {
+            icon: CakeIcon,
+            label: "Âge moyen des candidats :",
+            value: averageAge ? (averageAge + " ans") : "N/A"
+        },
+        {
+            icon: UserGroupIcon,
+            label: "Nombre de candidatures :",
+            value: candidacies ? candidacies.length : "N/A"
+        },
+        {
+            icon: EyeIcon,
+            label: "Nombre de vues :",
+            value: offer ? offer.views : "N/A"
+        },
+        {
+            icon: ChartPieIcon,
+            label: "Taux de conversion :",
+            value: candidacies && offer ? ((candidacies.length / offer.views) * 100).toFixed(2) + "%" : "N/A"
+        }
+    ]
 
     const questions = [
         {
@@ -278,6 +310,34 @@ const OfferDetails: FC<OfferDetailsProps> = ({
                                 />
                             </div>
                         </form>
+                    </div>
+                )}
+                    
+                {/* Statistiques */}
+                {isCompany && (
+                    <div className="col-span-6 mt-6 space-y-10 bg">
+                        <div className="text-2xl font-semibold text-indigo-700">Statistiques</div>
+                        <div className="w-full">
+                            {isLoading && (
+                                <div className="flex justify-center font-medium text-white">
+                                    <LoadingIcon className="mr-2 h-6 w-6" /> Chargement...
+                                </div>
+                            )}
+                            {candidacies &&
+                                <div className="flex rounded bg-white p-6 shadow-lg">
+                                    {/* Box content */}
+                                    <div className="mt-4 space-y-2 gap-x-2">
+                                        {stats.map((stat, statIdx) => (
+                                            <div key={statIdx} className="mt-0.5 flex items-center text-gray-800">
+                                                <stat.icon className="mr-1 h-5 w-5" />
+                                                <div className="font-medium">{stat.label}&nbsp;</div>
+                                                <div className="flex-1 text-gray-600">{stat.value}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 )}
 

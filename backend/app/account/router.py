@@ -28,6 +28,7 @@ async def login_account(account: schemas.AccountLogin, db: Session = Depends(get
         db_candidate = get_candidate_by_email(db, email=account.email)
         data = {
             "name": db_candidate.name,
+            "age": db_candidate.age,
             "email": db_candidate.email,
             "role": "candidate",
             "avatarUrl": db_candidate.photo_url

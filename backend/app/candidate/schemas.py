@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr
 
 class CandidateCreate(BaseModel):
     name: str
+    age: int
     email: EmailStr
     password: str
     photo_url: Union[str, None] = None
@@ -12,6 +13,7 @@ class CandidateCreate(BaseModel):
 class Candidate(BaseModel):
     id: int
     name: str
+    age: int
     email: EmailStr
     photo_url: Union[str, None] = None
     description: Union[str, None] = None
