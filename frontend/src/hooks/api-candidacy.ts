@@ -52,7 +52,7 @@ export function useCandidacy(id?: number) {
 }
 
 export function useOfferCandidacies(offerId: number) {
-    const { token } = useAuth({ requiredRole: AuthorizationRole.Company });
+    const { token } = useAuth({ requiredRole: AuthorizationRole.All });
 
     const { data, error, mutate } = useSWR<GetCandidaciesResponse>([
         `/offers/${offerId}/candidacies`,

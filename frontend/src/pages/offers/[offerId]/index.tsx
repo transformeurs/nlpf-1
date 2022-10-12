@@ -21,7 +21,7 @@ import { NotificationStatus, useNotification } from "../../../context/Notificati
 import { fetchApi, FetchMethod, uploadFormImage } from "../../../utils/fetch";
 import Modal, { ModalIcon, ModalType } from "../../../components/modal";
 import CandidacyPanel from "../../../components/candidacy-panel";
-import { useCandidacy } from "../../../hooks/api-candidacy";
+import { useOfferCandidacies } from "../../../hooks/api-candidacy";
 import LoadingIcon from "../../../components/loadingIcon";
 import { CakeIcon, ChartBarIcon, ChartPieIcon, EyeDropperIcon, EyeIcon, FaceSmileIcon, KeyIcon } from "@heroicons/react/24/solid";
 
@@ -68,7 +68,7 @@ const OfferDetails: FC<OfferDetailsProps> = ({
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [selectedAnswers, setSelectedAnswers] = useState<{ [id: number]: number }>({});
     const { offer } = getOffer(offerId);
-    const { candidacies, isLoading, isError } = useCandidacy();
+    const { candidacies, isLoading, isError } = useOfferCandidacies(offerId);
 
     // Compute the average candidate age
     const averageAge = candidacies && candidacies.reduce((acc, curr) => acc + curr.candidate_age, 0) / candidacies.length;

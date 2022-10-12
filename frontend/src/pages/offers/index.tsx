@@ -244,9 +244,9 @@ const Home: NextPage = () => {
                         .sort((a, b) =>
                             currentSort === "Les plus récentes"
                                 ? // @ts-ignore
-                                a.createdAt - b.createdAt
-                                : // @ts-ignore
                                 b.createdAt - a.createdAt
+                                : // @ts-ignore
+                                a.createdAt - b.createdAt
                         )
                         .map((offer, offerIdx) => (
                             <OfferPanel
