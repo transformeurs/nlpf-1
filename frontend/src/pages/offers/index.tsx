@@ -140,9 +140,6 @@ const OfferPanel: FC<OfferPanelProps> = ({
                     />
                 </div>
                 <div>
-                    <div className="mt-2 whitespace-nowrap text-sm text-gray-600">
-                        {responseTime}% de taux de réponse
-                    </div>
                 </div>
             </div>
         </div>
