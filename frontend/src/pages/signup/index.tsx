@@ -25,6 +25,10 @@ const SignUpForm: FC = () => {
     const { addNotification } = useNotification();
     const [buttonLoading, setButtonLoading] = useState(false);
 
+    const [ageValid, setAgeValid] = useState(false);
+    const [passwordValid, setPasswordValid] = useState(false);
+    const [emailValid, setEmailValid] = useState(false);
+
     const [userRole, setUserRole] = useState("candidates"); // Candidate by default
     const handleUserRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUserRole(event.target.value);
@@ -148,6 +152,14 @@ const SignUpForm: FC = () => {
                                     autoComplete={"email"}
                                     placeholder={"Adresse de courriel"}
                                     leftIcon={EnvelopeIcon}
+                                    error={async (value) => {
+                                        if (!value.match(/^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]{2,}.[a-z]{2,4}$/)) {
+                                            return "L'adresse e-mail n'est pas valide.";
+                                        } else {
+                                            return null;
+                                        }
+                                    }}
+                                    onChange={(value) => setEmailValid(value !== null)}
                                     required
                                 />
                             </div>
@@ -163,6 +175,14 @@ const SignUpForm: FC = () => {
                                     autoComplete={"new-password"}
                                     placeholder={"Mot de passe"}
                                     leftIcon={KeyIcon}
+                                    error={async (value) => {
+                                        if (value.length < 5) {
+                                            return "Votre mot de passe doit faire 5 caractères ou plus.";
+                                        } else {
+                                            return null;
+                                        }
+                                    }}
+                                    onChange={(value) => setPasswordValid(value !== null)}
                                     required
                                 />
                             </div>
@@ -180,6 +200,14 @@ const SignUpForm: FC = () => {
                                             "Âge"
                                         }
                                         leftIcon={CakeIcon}
+                                        error={async (value) => {
+                                            if (isNaN(parseInt(value))) {
+                                                return "Veuillez entrer un nombre";
+                                            } else {
+                                                return null;
+                                            }
+                                        }}
+                                        onChange={(value) => setAgeValid(value !== null)}
                                         required
                                     />
                                 </div>
@@ -216,7 +244,11 @@ const SignUpForm: FC = () => {
 
                             <div>
                                 Photo de profil
-                                <FileInput ref={photoFileInput} className="mt-3" />
+                                <FileInput
+                                    ref={photoFileInput}
+                                    className="mt-3"
+                                    accept="image/*"
+                                />
                             </div>
 
                             <div>
@@ -227,6 +259,7 @@ const SignUpForm: FC = () => {
                                     loading={buttonLoading}
                                     label={"S'inscrire"}
                                     className="w-full"
+                                    disabled={!ageValid || !passwordValid || !emailValid}
                                 />
                             </div>
                         </form>

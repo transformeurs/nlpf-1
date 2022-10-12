@@ -250,13 +250,21 @@ const OfferDetails: FC<OfferDetailsProps> = ({
                                     <div className="col-span-1 flex items-center font-medium text-gray-700">
                                         C.V.
                                     </div>
-                                    <FileInput ref={cvInputRef} className="col-span-3" />
+                                    <FileInput
+                                        ref={cvInputRef}
+                                        className="col-span-3"
+                                        accept=".pdf"
+                                    />
                                 </div>
                                 <div className="grid grid-cols-4">
                                     <div className="col-span-1 flex items-center font-medium text-gray-700">
                                         Lettre de motivation
                                     </div>
-                                    <FileInput ref={coverLetterInputRef} className="col-span-3" />
+                                    <FileInput
+                                        ref={coverLetterInputRef}
+                                        className="col-span-3"
+                                        accept=".pdf"
+                                    />
                                 </div>
                             </div>
 

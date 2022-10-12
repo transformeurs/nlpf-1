@@ -4,6 +4,7 @@ import Button, { ButtonSize, ButtonType } from "./button";
 
 export interface FileInputProps {
     className?: string;
+    accept?: string;
 }
 
 // We use forwardRef to expose the ref to the hidden file input
@@ -43,6 +44,7 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>((props, inp
                 ref={inputRef}
                 style={{ display: "none" }}
                 onChange={handleFileChange}
+                accept={props.accept}
             />
         </div>
     );
